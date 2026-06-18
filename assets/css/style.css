@@ -138,22 +138,14 @@ input {
   background: #edf3f7;
 }
 
-.folders li.active {
-  position: relative;
-  background: var(--green-soft);
-  color: #007a4f;
-  box-shadow: none;
+.folders li {
+    border: 1px solid transparent;
 }
 
-.folders li.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 4px;
-  background: var(--green);
-  border-radius: 0;
+.folders li.active {
+    background: #e6f8f0;
+    border-color: #b7ead5;
+    color: #0b8f5b;
 }
 
 .folders span {
