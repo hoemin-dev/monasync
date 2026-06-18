@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Monasync Mail</title>
+  <link rel="stylesheet" href="./assets/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">MONAS</div>
+    <nav>
+      <button class="active">메일</button>
+      <button>주소록</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="compose">
+        <button>메일 쓰기</button>
+        <button>내게 쓰기</button>
+      </div>
+
+      <ul class="folders">
+        <li>전체 메일함</li>
+        <li class="active">받은 메일함 <span>5</span></li>
+        <li>내게 쓴 메일함</li>
+        <li>보낸 메일함</li>
+        <li>메일 보관함</li>
+        <li>스팸 메일함</li>
+        <li>휴지통</li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <section class="titlebar">
+        <h1>받은 메일함 <span>5 / 1548</span></h1>
+        <input placeholder="검색" />
+      </section>
+
+      <section class="toolbar">
+        <button>답장</button>
+        <button>전체답장</button>
+        <button>전달</button>
+        <button>삭제</button>
+        <button>읽음</button>
+        <button>스팸</button>
+        <button>이동</button>
+      </section>
+
+      <table class="mail-table">
+        <thead>
+          <tr>
+            <th><input type="checkbox" /></th>
+            <th>★</th>
+            <th>첨부</th>
+            <th>보낸사람</th>
+            <th>제목</th>
+            <th>받은날짜</th>
+            <th>크기</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>☆</td>
+            <td>📎</td>
+            <td>문미리내</td>
+            <td class="subject">P4 그리동 6월 19일 설비 검증 계획 송부 건</td>
+            <td>2026.06.18 16:01</td>
+            <td>488.1 KB</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>
