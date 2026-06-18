@@ -19,10 +19,17 @@
 
 body {
   margin: 0;
-  font-family: "Inter", "Noto Sans KR", Arial, sans-serif;
+  font-family:
+    "Pretendard",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    Arial,
+    sans-serif;
   background: #eef3f7;
   color: var(--text);
   font-size: 14px;
+  letter-spacing: -0.01em;
 }
 
 button,
