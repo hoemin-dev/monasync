@@ -2,16 +2,23 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>MONASYNC v0.1</title>
-  <link rel="stylesheet" href="/assets/css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monasync Mail</title>
+  <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="logo">MONASYNC</div>
-    <nav>
+
+    <nav class="topnav">
       <button class="active">메일</button>
       <button>주소록</button>
     </nav>
+
+    <div class="user-switcher">
+      <span>현재 사용자</span>
+      <select id="userSelect"></select>
+    </div>
   </header>
 
   <div class="layout">
@@ -21,21 +28,41 @@
         <button>내게 쓰기</button>
       </div>
 
-      <ul class="folders">
-        <li>전체 메일함</li>
-        <li class="active">받은 메일함 <span>5</span></li>
-        <li>내게 쓴 메일함</li>
-        <li>보낸 메일함</li>
-        <li>메일 보관함</li>
-        <li>스팸 메일함</li>
-        <li>휴지통</li>
-      </ul>
+      <section class="side-section">
+        <h3>메일함</h3>
+        <ul class="folders">
+          <li class="active">전체 메일함</li>
+          <li>받은 메일함 <span>5</span></li>
+          <li>내게 쓴 메일함</li>
+          <li>보낸 메일함</li>
+          <li>메일 보관함</li>
+          <li>스팸 메일함</li>
+          <li>휴지통</li>
+        </ul>
+      </section>
+
+      <section class="side-section">
+        <h3>내 부서</h3>
+        <ul class="folders small">
+          <li>영업팀</li>
+          <li>기술팀</li>
+          <li>구매팀</li>
+        </ul>
+      </section>
+
+      <section class="side-section">
+        <h3>프로젝트</h3>
+        <ul class="folders small" id="projectList"></ul>
+      </section>
     </aside>
 
     <main class="main">
       <section class="titlebar">
-        <h1>받은 메일함 <span>5 / 1548</span></h1>
-        <input placeholder="검색" />
+        <div>
+          <h1>전체 메일함 <span id="mailCount"></span></h1>
+          <p id="userInfo"></p>
+        </div>
+        <input id="searchInput" placeholder="메일 검색" />
       </section>
 
       <section class="toolbar">
@@ -52,27 +79,22 @@
         <thead>
           <tr>
             <th><input type="checkbox" /></th>
-            <th>★</th>
+            <th>별</th>
             <th>첨부</th>
             <th>보낸사람</th>
             <th>제목</th>
+            <th>프로젝트</th>
+            <th>읽음</th>
+            <th>상태</th>
             <th>받은날짜</th>
             <th>크기</th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="unread">
-            <td><input type="checkbox" /></td>
-            <td>☆</td>
-            <td>📎</td>
-            <td>문미리내</td>
-            <td class="subject">P4 그리동 6월 19일 설비 검증 계획 송부 건</td>
-            <td>2026.06.18 16:01</td>
-            <td>488.1 KB</td>
-          </tr>
-        </tbody>
+        <tbody id="mailTableBody"></tbody>
       </table>
     </main>
   </div>
+
+  <script src="./assets/js/app.js"></script>
 </body>
 </html>
