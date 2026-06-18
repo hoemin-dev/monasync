@@ -139,9 +139,21 @@ input {
 }
 
 .folders li.active {
+  position: relative;
   background: var(--green-soft);
   color: #007a4f;
-  box-shadow: inset 4px 0 0 var(--green);
+  box-shadow: none;
+}
+
+.folders li.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  background: var(--green);
+  border-radius: 0;
 }
 
 .folders span {
