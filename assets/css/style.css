@@ -183,16 +183,6 @@ select {
   font-weight: 700;
 }
 
-.folders span {
-  margin-left: 7px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--green);
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-}
-
 .main {
   flex: 1;
   background: var(--panel);
@@ -239,6 +229,33 @@ select {
   border-color: var(--blue);
   background: white;
   box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.12);
+}
+
+.scope-tabs {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 26px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.scope-tabs button {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid #d9e1e8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #526173;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scope-tabs button.active {
+  background: var(--green-soft);
+  border-color: #b7ead5;
+  color: #0b8f5b;
 }
 
 .toolbar {
@@ -340,32 +357,41 @@ select {
 
 .mail-table th:nth-child(6),
 .mail-table td:nth-child(6) {
-  width: 160px;
+  width: 150px;
 }
 
 .mail-table th:nth-child(7),
 .mail-table td:nth-child(7) {
-  width: 110px;
+  width: 90px;
 }
 
 .mail-table th:nth-child(8),
 .mail-table td:nth-child(8) {
-  width: 100px;
+  width: 110px;
 }
 
 .mail-table th:nth-child(9),
 .mail-table td:nth-child(9) {
-  width: 150px;
+  width: 100px;
 }
 
 .mail-table th:nth-child(10),
 .mail-table td:nth-child(10) {
+  width: 150px;
+}
+
+.mail-table th:nth-child(11),
+.mail-table td:nth-child(11) {
   width: 90px;
 }
 
 .subject {
   color: #255fba;
   font-weight: 600;
+}
+
+.sender-cell {
+  color: #526173;
 }
 
 .read-chip,
@@ -430,31 +456,4 @@ input[type="checkbox"] {
   height: 16px;
   accent-color: var(--green);
   cursor: pointer;
-}
-
-.scope-tabs {
-  height: 52px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 26px;
-  border-bottom: 1px solid var(--line);
-  background: #ffffff;
-}
-
-.scope-tabs button {
-  height: 34px;
-  padding: 0 16px;
-  border: 1px solid #d9e1e8;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #526173;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.scope-tabs button.active {
-  background: var(--green-soft);
-  border-color: #b7ead5;
-  color: #0b8f5b;
 }

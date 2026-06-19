@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,7 +33,7 @@
         <h3>메일함</h3>
         <ul class="folders" id="folderList">
           <li class="active" data-folder="all">전체 메일함</li>
-          <li data-folder="inbox">받은 메일함 <span>5</span></li>
+          <li data-folder="inbox">받은 메일함</li>
           <li data-folder="self">내게 쓴 메일함</li>
           <li data-folder="sent">보낸 메일함</li>
           <li data-folder="archive">메일 보관함</li>
@@ -61,7 +60,7 @@
     <main class="main">
       <section class="titlebar">
         <div>
-          <h1>전체 메일함 <span id="mailCount"></span></h1>
+          <h1 id="pageTitle">전체 메일함 <span id="mailCount"></span></h1>
           <p id="userInfo"></p>
         </div>
         <input id="searchInput" placeholder="메일 검색" />
@@ -88,12 +87,13 @@
             <th><input type="checkbox" /></th>
             <th>별</th>
             <th>첨부</th>
-            <th>보낸사람</th>
+            <th>상대</th>
             <th>제목</th>
             <th>프로젝트</th>
+            <th>발송자</th>
             <th>읽음</th>
             <th>상태</th>
-            <th>받은날짜</th>
+            <th>날짜</th>
             <th>크기</th>
           </tr>
         </thead>
@@ -104,5 +104,4 @@
 
   <script src="./assets/js/app.js"></script>
 </body>
-
 </html>
