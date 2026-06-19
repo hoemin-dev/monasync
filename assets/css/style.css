@@ -284,31 +284,36 @@ select {
 }
 
 .scope-tabs {
-  height: 48px;
+  height: 42px;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-end;
+  gap: 4px;
   padding: 0 22px;
   border-bottom: 1px solid var(--line);
-  background: #ffffff;
+  background: #202b3a;
 }
 
 .scope-tabs button {
-  height: 30px;
-  padding: 0 14px;
-  border: 1px solid #d9e1e8;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #526173;
+  height: 34px;
+  min-width: 88px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9px 9px 0 0;
+  background: transparent;
+  color: #cbd5e1;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
 
+.scope-tabs button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
 .scope-tabs button.active {
-  background: var(--green-soft);
-  border-color: #b7ead5;
-  color: #0b8f5b;
+  background: #ffffff;
+  color: #1f2937;
 }
 
 .toolbar {
