@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,29 +8,26 @@
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="logo">MONASYNC</div>
+  <div class="app-shell">
+    <aside class="app-rail">
+      <div class="rail-logo">M</div>
+      <button class="rail-item active">✉</button>
+      <button class="rail-item">📇</button>
+      <button class="rail-item">📁</button>
+      <button class="rail-item">👥</button>
+      <button class="rail-item">⚙</button>
+    </aside>
 
-    <nav class="topnav">
-      <button class="active">메일</button>
-      <button>주소록</button>
-    </nav>
-
-    <div class="user-switcher">
-      <span>현재 사용자</span>
-      <select id="userSelect"></select>
-    </div>
-  </header>
-
-  <div class="layout">
     <aside class="sidebar">
+      <div class="brand">MONASYNC</div>
+
       <div class="compose">
-        <button>메일 쓰기</button>
-        <button>내게 쓰기</button>
+        <button>New Mail</button>
+        <button class="compose-more">⌄</button>
       </div>
 
       <section class="side-section">
-        <h3>메일함</h3>
+        <h3>MAILBOX</h3>
         <ul class="folders" id="folderList">
           <li class="active" data-folder="all">전체 메일함</li>
           <li data-folder="inbox">받은 메일함</li>
@@ -44,7 +40,7 @@
       </section>
 
       <section class="side-section">
-        <h3>내 부서</h3>
+        <h3>DEPARTMENTS</h3>
         <ul class="folders small" id="deptList">
           <li class="active" data-dept="all">전체 부서</li>
           <li data-dept="영업팀">영업팀</li>
@@ -54,18 +50,34 @@
       </section>
 
       <section class="side-section">
-        <h3>프로젝트</h3>
+        <h3>PROJECTS</h3>
         <ul class="folders small" id="projectList"></ul>
       </section>
     </aside>
 
     <main class="main">
+      <header class="topbar">
+        <nav class="topnav">
+          <button class="active">Mail</button>
+          <button>Contacts</button>
+        </nav>
+
+        <div class="search-wrap">
+          <span>⌕</span>
+          <input id="searchInput" placeholder="Search mail" />
+        </div>
+
+        <div class="user-switcher">
+          <span>현재 사용자</span>
+          <select id="userSelect"></select>
+        </div>
+      </header>
+
       <section class="titlebar">
         <div>
           <h1 id="pageTitle">전체 메일함 <span id="mailCount"></span></h1>
           <p id="userInfo"></p>
         </div>
-        <input id="searchInput" placeholder="메일 검색" />
       </section>
 
       <section class="scope-tabs" id="mailScopeTabs"></section>
@@ -80,28 +92,37 @@
         <button>이동</button>
       </section>
 
-      <table class="mail-table">
-        <thead>
-          <tr>
-            <th><input type="checkbox" /></th>
-            <th>별</th>
-            <th>첨부</th>
-            <th>상대</th>
-            <th>제목</th>
-            <th>프로젝트</th>
-            <th>발송자</th>
-            <th>읽음</th>
-            <th>상태</th>
-            <th>날짜</th>
-            <th>크기</th>
-          </tr>
-        </thead>
-        <tbody id="mailTableBody"></tbody>
-      </table>
+      <section class="content-grid">
+        <div class="mail-list-panel">
+          <table class="mail-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" /></th>
+                <th>별</th>
+                <th>첨부</th>
+                <th>상대</th>
+                <th>제목</th>
+                <th>프로젝트</th>
+                <th>발송자</th>
+                <th>읽음</th>
+                <th>상태</th>
+                <th>날짜</th>
+                <th>크기</th>
+              </tr>
+            </thead>
+            <tbody id="mailTableBody"></tbody>
+          </table>
+        </div>
+
+        <aside class="detail-panel">
+          <div id="detailBody" class="detail-empty">
+            메일을 선택하세요.
+          </div>
+        </aside>
+      </section>
     </main>
   </div>
 
   <script src="./assets/js/app.js"></script>
 </body>
-
 </html>

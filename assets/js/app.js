@@ -175,6 +175,7 @@ let currentScope = "company";
 let currentFolder = "all";
 let currentProjectId = "all";
 let currentDept = "all";
+let selectedMailId = null;
 
 const userSelect = document.getElementById("userSelect");
 const userInfo = document.getElementById("userInfo");
@@ -183,7 +184,7 @@ const projectList = document.getElementById("projectList");
 const searchInput = document.getElementById("searchInput");
 const pageTitle = document.getElementById("pageTitle");
 const mailScopeTabs = document.getElementById("mailScopeTabs");
-const deptList = document.getElementById("deptList");
+const detailBody = document.getElementById("detailBody");
 
 function init() {
   renderUserSelect();
@@ -196,6 +197,9 @@ function init() {
     currentScope = "company";
     currentProjectId = "all";
     currentDept = "all";
+    selectedMailId = null;
+
+    setActiveBySelector("#deptList li", "dept", "all");
     renderScopeTabs();
     renderProjects();
     renderMails();
@@ -205,46 +209,30 @@ function init() {
 
   document.querySelectorAll("#folderList li").forEach((item) => {
     item.addEventListener("click", () => {
-      document.querySelectorAll("#folderList li").forEach((li) => {
-        li.classList.remove("active");
-      });
-
+      document.querySelectorAll("#folderList li").forEach((li) => li.classList.remove("active"));
       item.classList.add("active");
       currentFolder = item.dataset.folder;
+      selectedMailId = null;
       renderMails();
     });
   });
 
   document.querySelectorAll("#deptList li").forEach((item) => {
     item.addEventListener("click", () => {
-      document.querySelectorAll("#deptList li").forEach((li) => {
-        li.classList.remove("active");
-      });
-
+      document.querySelectorAll("#deptList li").forEach((li) => li.classList.remove("active"));
       item.classList.add("active");
-
       currentDept = item.dataset.dept;
-
+      currentProjectId = "all";
+      selectedMailId = null;
       renderProjects();
       renderMails();
     });
   });
-
-  document.querySelectorAll("#deptList li").forEach((li) => {
-    li.classList.remove("active");
-  });
-
-  document
-    .querySelector('#deptList li[data-dept="all"]')
-    .classList.add("active");
 }
 
 function renderUserSelect() {
   userSelect.innerHTML = users
-    .map(
-      (user) =>
-        `<option value="${user.id}">${user.name} · ${user.dept}</option>`,
-    )
+    .map((user) => `<option value="${user.id}">${user.name} · ${user.dept}</option>`)
     .join("");
 
   userSelect.value = currentUser.id;
@@ -270,6 +258,7 @@ function renderScopeTabs() {
   document.querySelectorAll("#mailScopeTabs button").forEach((button) => {
     button.addEventListener("click", () => {
       currentScope = button.dataset.scope;
+      selectedMailId = null;
       renderScopeTabs();
       renderMails();
     });
@@ -289,7 +278,6 @@ function renderProjects() {
   const visibleProjects = projects.filter((project) => {
     if (currentDept === "all") {
       if (currentUser.role === "admin") return true;
-
       return project.dept === currentUser.dept;
     }
 
@@ -307,16 +295,17 @@ function renderProjects() {
   document.querySelectorAll("#projectList li").forEach((item) => {
     item.addEventListener("click", () => {
       currentProjectId = item.dataset.projectId;
+      selectedMailId = null;
       renderProjects();
       renderMails();
     });
   });
 }
 
-function renderMails() {
+function getVisibleMails() {
   const keyword = searchInput.value.trim().toLowerCase();
 
-  const visibleMails = mails.filter((mail) => {
+  return mails.filter((mail) => {
     const canSee =
       currentUser.role === "admin" ||
       mail.dept === currentUser.dept ||
@@ -331,42 +320,21 @@ function renderMails() {
 
     if (!matched) return false;
 
-    if (currentProjectId !== "all" && mail.projectId !== currentProjectId) {
-      return false;
-    }
-
-    if (currentDept !== "all") {
-      if (mail.dept !== currentDept) return false;
-    }
+    if (currentProjectId !== "all" && mail.projectId !== currentProjectId) return false;
+    if (currentDept !== "all" && mail.dept !== currentDept) return false;
 
     if (currentScope === "personal") {
-      if (currentFolder === "inbox") {
-        return (
-          mail.direction === "received" && mail.myUsers.includes(currentUser.id)
-        );
-      }
-
-      if (currentFolder === "sent") {
-        return mail.direction === "sent" && mail.sentBy === currentUser.id;
-      }
-
-      if (currentFolder === "all") {
-        return (
-          mail.myUsers.includes(currentUser.id) ||
-          mail.sentBy === currentUser.id
-        );
-      }
-
+      if (currentFolder === "inbox") return mail.direction === "received" && mail.myUsers.includes(currentUser.id);
+      if (currentFolder === "sent") return mail.direction === "sent" && mail.sentBy === currentUser.id;
+      if (currentFolder === "all") return mail.myUsers.includes(currentUser.id) || mail.sentBy === currentUser.id;
       return false;
     }
 
     if (currentScope === "company") {
       if (!canSee) return false;
-
       if (currentFolder === "inbox") return mail.direction === "received";
       if (currentFolder === "sent") return mail.direction === "sent";
       if (currentFolder === "all") return true;
-
       return false;
     }
 
@@ -376,10 +344,7 @@ function renderMails() {
       if (!canUseSendAddress(selectedAddress)) return false;
       if (!canSee) return false;
 
-      const addressMatched =
-        mail.to === selectedAddress.address ||
-        mail.from === selectedAddress.address;
-
+      const addressMatched = mail.to === selectedAddress.address || mail.from === selectedAddress.address;
       if (!addressMatched) return false;
 
       if (currentFolder === "inbox") return mail.direction === "received";
@@ -391,6 +356,14 @@ function renderMails() {
 
     return false;
   });
+}
+
+function renderMails() {
+  const visibleMails = getVisibleMails();
+
+  if (!selectedMailId && visibleMails.length > 0) {
+    selectedMailId = visibleMails[0].id;
+  }
 
   const folderName = getFolderName(currentFolder);
   const scopeName = getScopeName(currentScope);
@@ -402,18 +375,17 @@ function renderMails() {
     .map((mail) => {
       const readState = getReadState(mail);
       const unreadClass =
-        mail.direction === "received" && readState.type === "unread"
-          ? "unread"
-          : "";
+        mail.direction === "received" && readState.type === "unread" ? "unread" : "";
+      const selectedClass = mail.id === selectedMailId ? "selected" : "";
 
       return `
-        <tr class="${unreadClass}">
+        <tr class="${unreadClass} ${selectedClass}" data-mail-id="${mail.id}">
           <td><input type="checkbox" /></td>
           <td>${mail.starred ? "★" : "☆"}</td>
           <td>${mail.hasAttachment ? "📎" : ""}</td>
           <td>${mail.direction === "sent" ? mail.to : mail.from}</td>
           <td class="subject">${mail.subject}</td>
-          <td>${getProjectName(mail.projectId)}</td>
+          <td><span class="project-chip">${getProjectName(mail.projectId)}</span></td>
           <td class="sender-cell">${mail.direction === "sent" ? getUserName(mail.sentBy) : "-"}</td>
           <td><span class="read-chip ${readState.type}">${readState.label}</span></td>
           <td>${renderStatus(mail.status)}</td>
@@ -423,6 +395,67 @@ function renderMails() {
       `;
     })
     .join("");
+
+  document.querySelectorAll("#mailTableBody tr").forEach((row) => {
+    row.addEventListener("click", (event) => {
+      if (event.target.tagName === "INPUT") return;
+      selectedMailId = Number(row.dataset.mailId);
+      renderMails();
+    });
+  });
+
+  renderDetail(visibleMails);
+}
+
+function renderDetail(visibleMails) {
+  const mail = visibleMails.find((item) => item.id === selectedMailId);
+
+  if (!mail) {
+    detailBody.className = "detail-empty";
+    detailBody.innerHTML = "메일을 선택하세요.";
+    return;
+  }
+
+  const readState = getReadState(mail);
+
+  detailBody.className = "";
+  detailBody.innerHTML = `
+    <h2 class="detail-title">${mail.subject}</h2>
+
+    <div class="detail-meta">
+      <div><span class="detail-label">From</span><strong>${mail.from}</strong></div>
+      <div><span class="detail-label">To</span><span>${mail.to}</span></div>
+      <div><span class="detail-label">Date</span><span>${mail.date}</span></div>
+      <div><span class="detail-label">Size</span><span>${mail.size}</span></div>
+    </div>
+
+    <div class="detail-card">
+      <h4>PROJECT</h4>
+      <span class="project-chip">${getProjectName(mail.projectId)}</span>
+    </div>
+
+    <div class="detail-card">
+      <h4>WORKFLOW</h4>
+      <p>담당 부서: <strong>${mail.dept}</strong></p>
+      <p>상태: ${renderStatus(mail.status)}</p>
+      <p>읽음: <span class="read-chip ${readState.type}">${readState.label}</span></p>
+    </div>
+
+    <div class="detail-card">
+      <h4>MESSAGE</h4>
+      <p>
+        이 영역은 메일 본문 미리보기입니다. 실제 연동 후에는 Gmail API,
+        Microsoft Graph API, NAVER WORKS Mail API에서 가져온 본문이 표시됩니다.
+      </p>
+    </div>
+
+    <div class="detail-actions">
+      <button class="primary">답장</button>
+      <button>전달</button>
+      <button>프로젝트 연결</button>
+      <button>담당 변경</button>
+    </div>
+  `;
 }
 
 function getAddressByKey(key) {
@@ -467,9 +500,7 @@ function getReadState(mail) {
   }
 
   const meRead = mail.readBy.includes(currentUser.id);
-  const requiredAllRead = mail.requiredReaders.every((id) =>
-    mail.readBy.includes(id),
-  );
+  const requiredAllRead = mail.requiredReaders.every((id) => mail.readBy.includes(id));
   const someoneRead = mail.readBy.length > 0;
 
   const deptUserIds = users
@@ -478,21 +509,10 @@ function getReadState(mail) {
 
   const deptRead = mail.readBy.some((id) => deptUserIds.includes(id));
 
-  if (requiredAllRead) {
-    return { type: "all", label: "모두 읽음" };
-  }
-
-  if (meRead) {
-    return { type: "me", label: "내가 읽음" };
-  }
-
-  if (deptRead) {
-    return { type: "dept", label: "부서 읽음" };
-  }
-
-  if (someoneRead) {
-    return { type: "company", label: "회사 읽음" };
-  }
+  if (requiredAllRead) return { type: "all", label: "모두 읽음" };
+  if (meRead) return { type: "me", label: "내가 읽음" };
+  if (deptRead) return { type: "dept", label: "부서 읽음" };
+  if (someoneRead) return { type: "company", label: "회사 읽음" };
 
   return { type: "unread", label: "새 메일" };
 }
@@ -506,6 +526,12 @@ function renderStatus(status) {
   };
 
   return `<span class="status-chip ${map[status] || "review"}">${status}</span>`;
+}
+
+function setActiveBySelector(selector, datasetKey, value) {
+  document.querySelectorAll(selector).forEach((item) => {
+    item.classList.toggle("active", item.dataset[datasetKey] === value);
+  });
 }
 
 init();
