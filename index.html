@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MONASU</title>
+  <title>Monasync Mail</title>
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 
@@ -22,8 +22,8 @@
       <div class="brand">MONASYNC</div>
 
       <div class="compose">
-        <button>New Mail</button>
-        <button class="compose-more">⌄</button>
+        <button id="composeButton">New Mail</button>
+        <button class="compose-more" id="composeMoreButton">⌄</button>
       </div>
 
       <section class="side-section">
@@ -83,7 +83,7 @@
       <section class="scope-tabs" id="mailScopeTabs"></section>
 
       <section class="toolbar">
-        <button>답장</button>
+        <button id="replyButton">답장</button>
         <button>전체답장</button>
         <button>전달</button>
         <button>삭제</button>
@@ -103,7 +103,8 @@
                 <th>상대</th>
                 <th>제목</th>
                 <th>프로젝트</th>
-                <th>발송자</th>
+                <th>발신주체</th>
+                <th>작성자</th>
                 <th>읽음</th>
                 <th>상태</th>
                 <th>날짜</th>
@@ -121,6 +122,51 @@
         </aside>
       </section>
     </main>
+  </div>
+
+  <div class="compose-modal hidden" id="composeModal">
+    <div class="compose-window">
+      <div class="compose-head">
+        <strong id="composeTitle">새 메일</strong>
+        <button id="composeCloseButton">×</button>
+      </div>
+
+      <div class="compose-form">
+        <label>
+          <span>발신 주체</span>
+          <select id="composeFromSelect"></select>
+        </label>
+
+        <label>
+          <span>작성자</span>
+          <input id="composeAuthorInput" readonly />
+        </label>
+
+        <label>
+          <span>받는 사람</span>
+          <input id="composeToInput" placeholder="customer@example.com" />
+        </label>
+
+        <label>
+          <span>제목</span>
+          <input id="composeSubjectInput" placeholder="메일 제목" />
+        </label>
+
+        <label>
+          <span>서명</span>
+          <select id="composeSignatureSelect"></select>
+        </label>
+
+        <textarea id="composeBodyInput"></textarea>
+
+        <div class="signature-preview" id="signaturePreview"></div>
+      </div>
+
+      <div class="compose-footer">
+        <button class="ghost" id="composeCancelButton">취소</button>
+        <button class="primary" id="composeSendButton">발송 데모</button>
+      </div>
+    </div>
   </div>
 
   <script src="./assets/js/app.js"></script>
