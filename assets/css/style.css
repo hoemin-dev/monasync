@@ -181,7 +181,7 @@ select {
   min-width: 0;
   background: #ffffff;
   display: grid;
-  grid-template-rows: 54px 66px 48px 54px 1fr;
+  grid-template-rows: 48px 54px 66px 54px 1fr;
 }
 
 .topbar {
@@ -287,8 +287,8 @@ select {
     display:flex;
     align-items:flex-end;
     gap:0;
-    height:42px;
-    padding:0 14px;
+    height:48px;
+    padding:0 18px;
     background:#243246;
     overflow:hidden;
 }
