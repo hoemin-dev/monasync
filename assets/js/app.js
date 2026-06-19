@@ -8,21 +8,21 @@ const users = [
 const sendAddresses = [
   {
     key: "sales",
-    label: "sales",
+    label: "sales@",
     address: "sales@monas.co.kr",
     allowedUsers: ["ceo", "sales01"],
     allowedDepts: ["영업팀"],
   },
   {
     key: "pump",
-    label: "pump",
+    label: "pump@",
     address: "pump@monas.co.kr",
     allowedUsers: ["ceo", "sales01", "tech01"],
     allowedDepts: ["영업팀", "기술팀"],
   },
   {
     key: "export",
-    label: "export",
+    label: "export@",
     address: "export@monas.co.kr",
     allowedUsers: ["ceo", "sales01"],
     allowedDepts: ["영업팀"],
