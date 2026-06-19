@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -44,10 +45,11 @@
 
       <section class="side-section">
         <h3>내 부서</h3>
-        <ul class="folders small">
-          <li>영업팀</li>
-          <li>기술팀</li>
-          <li>구매팀</li>
+        <ul class="folders small" id="deptList">
+          <li class="active" data-dept="all">전체 부서</li>
+          <li data-dept="영업팀">영업팀</li>
+          <li data-dept="기술팀">기술팀</li>
+          <li data-dept="구매팀">구매팀</li>
         </ul>
       </section>
 
@@ -101,4 +103,5 @@
 
   <script src="./assets/js/app.js"></script>
 </body>
+
 </html>

@@ -174,6 +174,7 @@ let currentUser = users[0];
 let currentScope = "company";
 let currentFolder = "all";
 let currentProjectId = "all";
+let currentDept = "all";
 
 const userSelect = document.getElementById("userSelect");
 const userInfo = document.getElementById("userInfo");
@@ -182,6 +183,7 @@ const projectList = document.getElementById("projectList");
 const searchInput = document.getElementById("searchInput");
 const pageTitle = document.getElementById("pageTitle");
 const mailScopeTabs = document.getElementById("mailScopeTabs");
+const deptList = document.getElementById("deptList");
 
 function init() {
   renderUserSelect();
@@ -193,6 +195,7 @@ function init() {
     currentUser = users.find((user) => user.id === userSelect.value);
     currentScope = "company";
     currentProjectId = "all";
+    currentDept = "all";
     renderScopeTabs();
     renderProjects();
     renderMails();
@@ -211,6 +214,29 @@ function init() {
       renderMails();
     });
   });
+
+  document.querySelectorAll("#deptList li").forEach((item) => {
+    item.addEventListener("click", () => {
+      document.querySelectorAll("#deptList li").forEach((li) => {
+        li.classList.remove("active");
+      });
+
+      item.classList.add("active");
+
+      currentDept = item.dataset.dept;
+
+      renderProjects();
+      renderMails();
+    });
+  });
+
+  document.querySelectorAll("#deptList li").forEach((li) => {
+    li.classList.remove("active");
+  });
+
+  document
+    .querySelector('#deptList li[data-dept="all"]')
+    .classList.add("active");
 }
 
 function renderUserSelect() {
@@ -261,8 +287,13 @@ function canUseSendAddress(addressItem) {
 
 function renderProjects() {
   const visibleProjects = projects.filter((project) => {
-    if (currentUser.role === "admin") return true;
-    return project.dept === currentUser.dept;
+    if (currentDept === "all") {
+      if (currentUser.role === "admin") return true;
+
+      return project.dept === currentUser.dept;
+    }
+
+    return project.dept === currentDept;
   });
 
   projectList.innerHTML = [
@@ -302,6 +333,10 @@ function renderMails() {
 
     if (currentProjectId !== "all" && mail.projectId !== currentProjectId) {
       return false;
+    }
+
+    if (currentDept !== "all") {
+      if (mail.dept !== currentDept) return false;
     }
 
     if (currentScope === "personal") {
