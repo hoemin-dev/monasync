@@ -5,6 +5,35 @@ const users = [
   { id: "purchase01", name: "문미리내", role: "member", dept: "구매팀" },
 ];
 
+const sendAddresses = [
+  {
+    key: "sales",
+    label: "sales",
+    address: "sales@monas.co.kr",
+    allowedUsers: ["ceo", "sales01"],
+    allowedDepts: ["영업팀"],
+  },
+  {
+    key: "pump",
+    label: "pump",
+    address: "pump@monas.co.kr",
+    allowedUsers: ["ceo", "sales01", "tech01"],
+    allowedDepts: ["영업팀", "기술팀"],
+  },
+  {
+    key: "export",
+    label: "export",
+    address: "export@monas.co.kr",
+    allowedUsers: ["ceo", "sales01"],
+    allowedDepts: ["영업팀"],
+  },
+];
+
+const baseTabs = [
+  { key: "company", label: "전체" },
+  { key: "personal", label: "개인" },
+];
+
 const projects = [
   { id: "p4", name: "P4 그리동 설비 검증", dept: "기술팀" },
   { id: "mga310", name: "MGA310 Zuluf", dept: "영업팀" },
@@ -16,8 +45,8 @@ const mails = [
   {
     id: 1,
     direction: "received",
-    from: "문미리내",
-    to: "tech@monas.co.kr",
+    from: "customer@example.com",
+    to: "pump@monas.co.kr",
     sentBy: "",
     myUsers: ["tech01"],
     subject: "P4 그리동 6월 19일 설비 검증 계획 송부 건",
@@ -70,41 +99,23 @@ const mails = [
   {
     id: 4,
     direction: "received",
-    from: "bearing-vendor",
-    to: "purchase@monas.co.kr",
+    from: "overseas@client.com",
+    to: "export@monas.co.kr",
     sentBy: "",
-    myUsers: ["purchase01"],
-    subject: "Bearing Housing 가공 단가 회신",
+    myUsers: ["sales01"],
+    subject: "Export inquiry for MONAS pump",
     date: "2026.06.17 13:11",
     size: "1.2 MB",
     hasAttachment: true,
     starred: false,
-    dept: "구매팀",
-    projectId: "bearing",
-    status: "처리완료",
-    readBy: ["ceo", "purchase01"],
-    requiredReaders: ["ceo", "purchase01"],
+    dept: "영업팀",
+    projectId: "s4212247",
+    status: "답변필요",
+    readBy: ["ceo"],
+    requiredReaders: ["ceo", "sales01"],
   },
   {
     id: 5,
-    direction: "received",
-    from: "info@partner.co.kr",
-    to: "info@monas.co.kr",
-    sentBy: "",
-    myUsers: ["sales01", "tech01"],
-    subject: "6월 납기 일정 확인 요청",
-    date: "2026.06.16 09:28",
-    size: "34.7 KB",
-    hasAttachment: false,
-    starred: false,
-    dept: "전체",
-    projectId: "",
-    status: "검토중",
-    readBy: ["sales01", "tech01"],
-    requiredReaders: ["ceo", "sales01", "tech01", "purchase01"],
-  },
-  {
-    id: 6,
     direction: "sent",
     from: "sales@monas.co.kr",
     to: "customer@example.com",
@@ -122,9 +133,9 @@ const mails = [
     requiredReaders: ["sales01"],
   },
   {
-    id: 7,
+    id: 6,
     direction: "sent",
-    from: "tech@monas.co.kr",
+    from: "pump@monas.co.kr",
     to: "plant@example.com",
     sentBy: "tech01",
     myUsers: ["tech01"],
@@ -139,6 +150,24 @@ const mails = [
     readBy: ["tech01"],
     requiredReaders: ["tech01"],
   },
+  {
+    id: 7,
+    direction: "sent",
+    from: "export@monas.co.kr",
+    to: "buyer@example.com",
+    sentBy: "ceo",
+    myUsers: ["ceo"],
+    subject: "Export quotation for progressive cavity pump",
+    date: "2026.06.18 11:10",
+    size: "740 KB",
+    hasAttachment: true,
+    starred: false,
+    dept: "영업팀",
+    projectId: "s4212247",
+    status: "처리완료",
+    readBy: ["ceo"],
+    requiredReaders: ["ceo"],
+  },
 ];
 
 let currentUser = users[0];
@@ -147,37 +176,27 @@ let currentFolder = "all";
 
 const userSelect = document.getElementById("userSelect");
 const userInfo = document.getElementById("userInfo");
-const mailCount = document.getElementById("mailCount");
 const mailTableBody = document.getElementById("mailTableBody");
 const projectList = document.getElementById("projectList");
 const searchInput = document.getElementById("searchInput");
 const pageTitle = document.getElementById("pageTitle");
+const mailScopeTabs = document.getElementById("mailScopeTabs");
 
 function init() {
   renderUserSelect();
+  renderScopeTabs();
   renderProjects();
   renderMails();
 
   userSelect.addEventListener("change", () => {
     currentUser = users.find((user) => user.id === userSelect.value);
+    currentScope = "company";
+    renderScopeTabs();
     renderProjects();
     renderMails();
   });
 
   searchInput.addEventListener("input", renderMails);
-
-  document.querySelectorAll(".scope-tabs button").forEach((button) => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll(".scope-tabs button").forEach((btn) => {
-        btn.classList.remove("active");
-      });
-
-      button.classList.add("active");
-      currentScope = button.dataset.scope;
-      renderProjects();
-      renderMails();
-    });
-  });
 
   document.querySelectorAll("#folderList li").forEach((item) => {
     item.addEventListener("click", () => {
@@ -198,6 +217,41 @@ function renderUserSelect() {
     .join("");
 
   userSelect.value = currentUser.id;
+}
+
+function renderScopeTabs() {
+  const addressTabs = sendAddresses
+    .filter((item) => canUseSendAddress(item))
+    .map((item) => ({
+      key: item.key,
+      label: item.label,
+    }));
+
+  const tabs = [...baseTabs, ...addressTabs];
+
+  mailScopeTabs.innerHTML = tabs
+    .map((tab) => {
+      const activeClass = tab.key === currentScope ? "active" : "";
+      return `<button class="${activeClass}" data-scope="${tab.key}">${tab.label}</button>`;
+    })
+    .join("");
+
+  document.querySelectorAll("#mailScopeTabs button").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentScope = button.dataset.scope;
+      renderScopeTabs();
+      renderMails();
+    });
+  });
+}
+
+function canUseSendAddress(addressItem) {
+  if (currentUser.role === "admin") return true;
+
+  return (
+    addressItem.allowedUsers.includes(currentUser.id) ||
+    addressItem.allowedDepts.includes(currentUser.dept)
+  );
 }
 
 function renderProjects() {
@@ -255,13 +309,32 @@ function renderMails() {
       return false;
     }
 
+    const selectedAddress = getAddressByKey(currentScope);
+
+    if (selectedAddress) {
+      if (!canUseSendAddress(selectedAddress)) return false;
+      if (!canSee) return false;
+
+      const addressMatched =
+        mail.to === selectedAddress.address ||
+        mail.from === selectedAddress.address;
+
+      if (!addressMatched) return false;
+
+      if (currentFolder === "inbox") return mail.direction === "received";
+      if (currentFolder === "sent") return mail.direction === "sent";
+      if (currentFolder === "all") return true;
+
+      return false;
+    }
+
     return false;
   });
 
   const folderName = getFolderName(currentFolder);
-  const scopeName = currentScope === "company" ? "전체메일함" : "개인메일함";
+  const scopeName = getScopeName(currentScope);
 
-  pageTitle.innerHTML = `${scopeName} · ${folderName} <span id="mailCount">${visibleMails.length}건</span>`;
+  pageTitle.innerHTML = `${scopeName} · ${folderName} <span>${visibleMails.length}건</span>`;
   userInfo.textContent = `${currentUser.name} · ${currentUser.role === "admin" ? "관리자" : currentUser.dept}`;
 
   mailTableBody.innerHTML = visibleMails
@@ -287,6 +360,18 @@ function renderMails() {
       `;
     })
     .join("");
+}
+
+function getAddressByKey(key) {
+  return sendAddresses.find((item) => item.key === key);
+}
+
+function getScopeName(scope) {
+  if (scope === "company") return "전체";
+  if (scope === "personal") return "개인";
+
+  const address = getAddressByKey(scope);
+  return address ? address.label : "전체";
 }
 
 function getFolderName(folder) {
