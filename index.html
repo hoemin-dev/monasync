@@ -6,7 +6,6 @@
   <title>Monasync Mail</title>
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
-
 <body>
   <div class="app-shell">
     <aside class="app-rail">
@@ -83,7 +82,7 @@
       <section class="scope-tabs" id="mailScopeTabs"></section>
 
       <section class="toolbar">
-        <button id="replyButton">답장</button>
+        <button id="toolbarReplyButton">답장</button>
         <button>전체답장</button>
         <button>전달</button>
         <button>삭제</button>
@@ -116,9 +115,7 @@
         </div>
 
         <aside class="detail-panel">
-          <div id="detailBody" class="detail-empty">
-            메일을 선택하세요.
-          </div>
+          <div id="detailBody" class="detail-empty">메일을 선택하세요.</div>
         </aside>
       </section>
     </main>
@@ -126,10 +123,10 @@
 
   <div class="compose-modal hidden" id="composeModal">
     <div class="compose-window">
-      <div class="compose-head">
-        <strong id="composeTitle">새 메일</strong>
+      <header class="compose-header">
+        <strong>새 메일 작성</strong>
         <button id="composeCloseButton">×</button>
-      </div>
+      </header>
 
       <div class="compose-form">
         <label>
@@ -138,8 +135,8 @@
         </label>
 
         <label>
-          <span>작성자</span>
-          <input id="composeAuthorInput" readonly />
+          <span>서명</span>
+          <select id="composeSignatureSelect"></select>
         </label>
 
         <label>
@@ -152,20 +149,21 @@
           <input id="composeSubjectInput" placeholder="메일 제목" />
         </label>
 
-        <label>
-          <span>서명</span>
-          <select id="composeSignatureSelect"></select>
+        <label class="compose-body-label">
+          <span>본문</span>
+          <textarea id="composeBodyInput" placeholder="본문을 입력하세요."></textarea>
         </label>
 
-        <textarea id="composeBodyInput"></textarea>
-
-        <div class="signature-preview" id="signaturePreview"></div>
+        <div class="signature-preview-wrap">
+          <div class="signature-preview-title">실제 발송 본문 미리보기</div>
+          <div class="mail-body compose-preview" id="composePreview"></div>
+        </div>
       </div>
 
-      <div class="compose-footer">
-        <button class="ghost" id="composeCancelButton">취소</button>
-        <button class="primary" id="composeSendButton">발송 데모</button>
-      </div>
+      <footer class="compose-footer">
+        <button id="sendDemoButton" class="primary">데모 발송</button>
+        <button id="composeCancelButton">취소</button>
+      </footer>
     </div>
   </div>
 

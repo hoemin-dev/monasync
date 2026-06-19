@@ -6,7 +6,8 @@ const users = [
     dept: "전체",
     title: "CEO",
     phone: "031-000-0000",
-    mobile: "010-0000-0000",
+    mobile: "010-0000-0001",
+    email: "ceo@monas.co.kr",
   },
   {
     id: "sales01",
@@ -14,8 +15,9 @@ const users = [
     role: "member",
     dept: "영업팀",
     title: "Sales Manager",
-    phone: "031-000-1001",
-    mobile: "010-1111-2222",
+    phone: "031-000-0000",
+    mobile: "010-0000-0002",
+    email: "sales@monas.co.kr",
   },
   {
     id: "tech01",
@@ -23,8 +25,9 @@ const users = [
     role: "member",
     dept: "기술팀",
     title: "Technical Manager",
-    phone: "031-000-2001",
-    mobile: "010-2222-3333",
+    phone: "031-000-0000",
+    mobile: "010-0000-0003",
+    email: "pump@monas.co.kr",
   },
   {
     id: "purchase01",
@@ -32,8 +35,9 @@ const users = [
     role: "member",
     dept: "구매팀",
     title: "Purchasing Manager",
-    phone: "031-000-3001",
-    mobile: "010-3333-4444",
+    phone: "031-000-0000",
+    mobile: "010-0000-0004",
+    email: "purchase@monas.co.kr",
   },
 ];
 
@@ -43,8 +47,7 @@ const sendAddresses = [
     label: "sales@",
     address: "sales@monas.co.kr",
     displayName: "MONAS Sales Team",
-    replyTo: "sales@monas.co.kr",
-    defaultDept: "영업팀",
+    teamName: "MONAS Sales Team",
     allowedUsers: ["ceo", "sales01"],
     allowedDepts: ["영업팀"],
   },
@@ -53,8 +56,7 @@ const sendAddresses = [
     label: "pump@",
     address: "pump@monas.co.kr",
     displayName: "MONAS Pump Team",
-    replyTo: "pump@monas.co.kr",
-    defaultDept: "기술팀",
+    teamName: "MONAS Pump Team",
     allowedUsers: ["ceo", "sales01", "tech01"],
     allowedDepts: ["영업팀", "기술팀"],
   },
@@ -63,28 +65,9 @@ const sendAddresses = [
     label: "export@",
     address: "export@monas.co.kr",
     displayName: "MONAS Export Team",
-    replyTo: "export@monas.co.kr",
-    defaultDept: "영업팀",
+    teamName: "MONAS Export Team",
     allowedUsers: ["ceo", "sales01"],
     allowedDepts: ["영업팀"],
-  },
-];
-
-const signatureTemplates = [
-  {
-    id: "user-default",
-    label: "로그인 사용자 명함",
-    type: "user",
-  },
-  {
-    id: "team-default",
-    label: "팀 대표 서명",
-    type: "team",
-  },
-  {
-    id: "none",
-    label: "서명 없음",
-    type: "none",
   },
 ];
 
@@ -100,18 +83,18 @@ const projects = [
   { id: "bearing", name: "Bearing Housing 외주", dept: "구매팀" },
 ];
 
-const mails = [
+let mails = [
   {
     id: 1,
     direction: "received",
     from: "customer@example.com",
-    fromIdentity: "Customer",
+    fromName: "Customer",
     to: "pump@monas.co.kr",
-    toIdentity: "MONAS Pump Team",
-    replyTo: "pump@monas.co.kr",
+    fromDisplay: "Customer <customer@example.com>",
     sentBy: "",
-    signedBy: "",
-    signatureType: "",
+    authorId: "",
+    signatureUserId: "",
+    fromAddressKey: "pump",
     myUsers: ["tech01"],
     subject: "P4 그리동 6월 19일 설비 검증 계획 송부 건",
     date: "2026.06.18 16:01",
@@ -123,18 +106,19 @@ const mails = [
     status: "검토중",
     readBy: ["tech01"],
     requiredReaders: ["ceo", "tech01", "purchase01"],
+    bodyHtml: `<p>안녕하세요.</p><p>P4 그리동 설비 검증 계획서와 점검 항목을 첨부드립니다.</p><p>검토 후 회신 부탁드립니다.</p>`,
   },
   {
     id: 2,
     direction: "received",
     from: "Minsu KIM",
-    fromIdentity: "Minsu KIM",
+    fromName: "Minsu KIM",
     to: "sales@monas.co.kr",
-    toIdentity: "MONAS Sales Team",
-    replyTo: "sales@monas.co.kr",
+    fromDisplay: "Minsu KIM <minsu.kim@example.com>",
     sentBy: "",
-    signedBy: "",
-    signatureType: "",
+    authorId: "",
+    signatureUserId: "",
+    fromAddressKey: "sales",
     myUsers: ["sales01"],
     subject: "Zuluf MGA310 Progressive Cavity Pump Tech clarification",
     date: "2026.06.18 10:22",
@@ -146,18 +130,19 @@ const mails = [
     status: "답변필요",
     readBy: ["sales01"],
     requiredReaders: ["ceo", "sales01", "tech01"],
+    bodyHtml: `<p>Dear MONAS Sales Team,</p><p>Please clarify the technical points for the MGA310 pump selection.</p><p>We are waiting for your reply.</p>`,
   },
   {
     id: 3,
     direction: "received",
     from: "sales@customer.com",
-    fromIdentity: "Customer Sales",
+    fromName: "Customer Sales",
     to: "sales@monas.co.kr",
-    toIdentity: "MONAS Sales Team",
-    replyTo: "sales@monas.co.kr",
+    fromDisplay: "Customer Sales <sales@customer.com>",
     sentBy: "",
-    signedBy: "",
-    signatureType: "",
+    authorId: "",
+    signatureUserId: "",
+    fromAddressKey: "sales",
     myUsers: ["sales01"],
     subject: "S4212247 견적 요청드립니다",
     date: "2026.06.17 17:45",
@@ -169,18 +154,19 @@ const mails = [
     status: "견적필요",
     readBy: [],
     requiredReaders: ["ceo", "sales01"],
+    bodyHtml: `<p>안녕하세요.</p><p>S4212247 건 견적 요청드립니다.</p><p>납기와 단가 확인 부탁드립니다.</p>`,
   },
   {
     id: 4,
     direction: "received",
     from: "overseas@client.com",
-    fromIdentity: "Overseas Client",
+    fromName: "Overseas Client",
     to: "export@monas.co.kr",
-    toIdentity: "MONAS Export Team",
-    replyTo: "export@monas.co.kr",
+    fromDisplay: "Overseas Client <overseas@client.com>",
     sentBy: "",
-    signedBy: "",
-    signatureType: "",
+    authorId: "",
+    signatureUserId: "",
+    fromAddressKey: "export",
     myUsers: ["sales01"],
     subject: "Export inquiry for MONAS pump",
     date: "2026.06.17 13:11",
@@ -192,76 +178,50 @@ const mails = [
     status: "답변필요",
     readBy: ["ceo"],
     requiredReaders: ["ceo", "sales01"],
+    bodyHtml: `<p>Dear MONAS Export Team,</p><p>We would like to receive your quotation for a progressive cavity pump.</p>`,
   },
-  {
+  createSentMail({
     id: 5,
-    direction: "sent",
-    from: "sales@monas.co.kr",
-    fromIdentity: "MONAS Sales Team",
+    fromAddressKey: "sales",
     to: "customer@example.com",
-    toIdentity: "Customer",
-    replyTo: "sales@monas.co.kr",
-    sentBy: "sales01",
-    signedBy: "sales01",
-    signatureType: "user-default",
-    myUsers: ["sales01"],
+    authorId: "sales01",
+    signatureUserId: "sales01",
     subject: "MGA310 견적서 송부드립니다",
     date: "2026.06.18 18:20",
     size: "320 KB",
     hasAttachment: true,
-    starred: false,
     dept: "영업팀",
     projectId: "mga310",
-    status: "처리완료",
-    readBy: ["sales01"],
-    requiredReaders: ["sales01"],
-  },
-  {
+    bodyText: "안녕하세요.\n\n요청하신 MGA310 견적서 송부드립니다.\n첨부파일 확인 부탁드립니다.",
+  }),
+  createSentMail({
     id: 6,
-    direction: "sent",
-    from: "pump@monas.co.kr",
-    fromIdentity: "MONAS Pump Team",
+    fromAddressKey: "pump",
     to: "plant@example.com",
-    toIdentity: "Plant Customer",
-    replyTo: "pump@monas.co.kr",
-    sentBy: "tech01",
-    signedBy: "tech01",
-    signatureType: "user-default",
-    myUsers: ["tech01"],
+    authorId: "tech01",
+    signatureUserId: "tech01",
     subject: "P4 그리동 설비 검증 자료 송부",
     date: "2026.06.18 15:30",
     size: "1.8 MB",
     hasAttachment: true,
-    starred: false,
     dept: "기술팀",
     projectId: "p4",
-    status: "처리완료",
-    readBy: ["tech01"],
-    requiredReaders: ["tech01"],
-  },
-  {
+    bodyText: "안녕하세요.\n\nP4 그리동 설비 검증 자료 송부드립니다.\n검토 후 의견 부탁드립니다.",
+  }),
+  createSentMail({
     id: 7,
-    direction: "sent",
-    from: "export@monas.co.kr",
-    fromIdentity: "MONAS Export Team",
+    fromAddressKey: "export",
     to: "buyer@example.com",
-    toIdentity: "Buyer",
-    replyTo: "export@monas.co.kr",
-    sentBy: "ceo",
-    signedBy: "ceo",
-    signatureType: "user-default",
-    myUsers: ["ceo"],
+    authorId: "ceo",
+    signatureUserId: "ceo",
     subject: "Export quotation for progressive cavity pump",
     date: "2026.06.18 11:10",
     size: "740 KB",
     hasAttachment: true,
-    starred: false,
     dept: "영업팀",
     projectId: "s4212247",
-    status: "처리완료",
-    readBy: ["ceo"],
-    requiredReaders: ["ceo"],
-  },
+    bodyText: "Dear Customer,\n\nPlease find attached our quotation for the progressive cavity pump.\nWe look forward to your feedback.",
+  }),
 ];
 
 let currentUser = users[0];
@@ -279,28 +239,29 @@ const searchInput = document.getElementById("searchInput");
 const pageTitle = document.getElementById("pageTitle");
 const mailScopeTabs = document.getElementById("mailScopeTabs");
 const detailBody = document.getElementById("detailBody");
-
 const composeButton = document.getElementById("composeButton");
-const replyButton = document.getElementById("replyButton");
+const composeMoreButton = document.getElementById("composeMoreButton");
 const composeModal = document.getElementById("composeModal");
 const composeCloseButton = document.getElementById("composeCloseButton");
 const composeCancelButton = document.getElementById("composeCancelButton");
-const composeSendButton = document.getElementById("composeSendButton");
-const composeTitle = document.getElementById("composeTitle");
 const composeFromSelect = document.getElementById("composeFromSelect");
-const composeAuthorInput = document.getElementById("composeAuthorInput");
+const composeSignatureSelect = document.getElementById("composeSignatureSelect");
 const composeToInput = document.getElementById("composeToInput");
 const composeSubjectInput = document.getElementById("composeSubjectInput");
-const composeSignatureSelect = document.getElementById("composeSignatureSelect");
 const composeBodyInput = document.getElementById("composeBodyInput");
-const signaturePreview = document.getElementById("signaturePreview");
+const composePreview = document.getElementById("composePreview");
+const sendDemoButton = document.getElementById("sendDemoButton");
+const toolbarReplyButton = document.getElementById("toolbarReplyButton");
 
 function init() {
   renderUserSelect();
   renderScopeTabs();
   renderProjects();
   renderMails();
+  bindEvents();
+}
 
+function bindEvents() {
   userSelect.addEventListener("change", () => {
     currentUser = users.find((user) => user.id === userSelect.value);
     currentScope = "company";
@@ -339,37 +300,33 @@ function init() {
   });
 
   composeButton.addEventListener("click", () => openCompose());
-  replyButton.addEventListener("click", () => openReplyToSelectedMail());
+  composeMoreButton.addEventListener("click", () => openCompose());
+  toolbarReplyButton.addEventListener("click", () => openReplyCompose());
   composeCloseButton.addEventListener("click", closeCompose);
   composeCancelButton.addEventListener("click", closeCompose);
-  composeFromSelect.addEventListener("change", updateComposeSignaturePreview);
-  composeSignatureSelect.addEventListener("change", updateComposeSignaturePreview);
-  composeSendButton.addEventListener("click", sendDemoMail);
+  composeFromSelect.addEventListener("change", renderComposePreview);
+  composeSignatureSelect.addEventListener("change", renderComposePreview);
+  composeBodyInput.addEventListener("input", renderComposePreview);
+
+  sendDemoButton.addEventListener("click", sendDemoMail);
 }
 
 function renderUserSelect() {
   userSelect.innerHTML = users
     .map((user) => `<option value="${user.id}">${user.name} · ${user.dept}</option>`)
     .join("");
-
   userSelect.value = currentUser.id;
 }
 
 function renderScopeTabs() {
   const addressTabs = sendAddresses
     .filter((item) => canUseSendAddress(item))
-    .map((item) => ({
-      key: item.key,
-      label: item.label,
-    }));
+    .map((item) => ({ key: item.key, label: item.label }));
 
   const tabs = [...baseTabs, ...addressTabs];
 
   mailScopeTabs.innerHTML = tabs
-    .map((tab) => {
-      const activeClass = tab.key === currentScope ? "active" : "";
-      return `<button class="${activeClass}" data-scope="${tab.key}">${tab.label}</button>`;
-    })
+    .map((tab) => `<button class="${tab.key === currentScope ? "active" : ""}" data-scope="${tab.key}">${tab.label}</button>`)
     .join("");
 
   document.querySelectorAll("#mailScopeTabs button").forEach((button) => {
@@ -382,31 +339,18 @@ function renderScopeTabs() {
   });
 }
 
-function canUseSendAddress(addressItem) {
-  if (currentUser.role === "admin") return true;
-
-  return (
-    addressItem.allowedUsers.includes(currentUser.id) ||
-    addressItem.allowedDepts.includes(currentUser.dept)
-  );
-}
-
 function renderProjects() {
   const visibleProjects = projects.filter((project) => {
     if (currentDept === "all") {
       if (currentUser.role === "admin") return true;
       return project.dept === currentUser.dept;
     }
-
     return project.dept === currentDept;
   });
 
   projectList.innerHTML = [
     `<li class="${currentProjectId === "all" ? "active" : ""}" data-project-id="all">전체 프로젝트</li>`,
-    ...visibleProjects.map((project) => {
-      const activeClass = currentProjectId === project.id ? "active" : "";
-      return `<li class="${activeClass}" data-project-id="${project.id}">${project.name}</li>`;
-    }),
+    ...visibleProjects.map((project) => `<li class="${currentProjectId === project.id ? "active" : ""}" data-project-id="${project.id}">${project.name}</li>`),
   ].join("");
 
   document.querySelectorAll("#projectList li").forEach((item) => {
@@ -423,23 +367,18 @@ function getVisibleMails() {
   const keyword = searchInput.value.trim().toLowerCase();
 
   return mails.filter((mail) => {
-    const canSee =
-      currentUser.role === "admin" ||
-      mail.dept === currentUser.dept ||
-      mail.dept === "전체";
+    const canSee = currentUser.role === "admin" || mail.dept === currentUser.dept || mail.dept === "전체";
+    const selectedAddress = getAddressByKey(currentScope);
 
     const matched =
       mail.from.toLowerCase().includes(keyword) ||
       mail.to.toLowerCase().includes(keyword) ||
       mail.subject.toLowerCase().includes(keyword) ||
-      mail.fromIdentity.toLowerCase().includes(keyword) ||
-      mail.toIdentity.toLowerCase().includes(keyword) ||
       getProjectName(mail.projectId).toLowerCase().includes(keyword) ||
       getUserName(mail.sentBy).toLowerCase().includes(keyword) ||
-      getUserName(mail.signedBy).toLowerCase().includes(keyword);
+      getTeamName(mail.fromAddressKey).toLowerCase().includes(keyword);
 
     if (!matched) return false;
-
     if (currentProjectId !== "all" && mail.projectId !== currentProjectId) return false;
     if (currentDept !== "all" && mail.dept !== currentDept) return false;
 
@@ -458,19 +397,14 @@ function getVisibleMails() {
       return false;
     }
 
-    const selectedAddress = getAddressByKey(currentScope);
-
     if (selectedAddress) {
       if (!canUseSendAddress(selectedAddress)) return false;
       if (!canSee) return false;
-
       const addressMatched = mail.to === selectedAddress.address || mail.from === selectedAddress.address;
       if (!addressMatched) return false;
-
       if (currentFolder === "inbox") return mail.direction === "received";
       if (currentFolder === "sent") return mail.direction === "sent";
       if (currentFolder === "all") return true;
-
       return false;
     }
 
@@ -481,9 +415,7 @@ function getVisibleMails() {
 function renderMails() {
   const visibleMails = getVisibleMails();
 
-  if (!selectedMailId && visibleMails.length > 0) {
-    selectedMailId = visibleMails[0].id;
-  }
+  if (!selectedMailId && visibleMails.length > 0) selectedMailId = visibleMails[0].id;
 
   const folderName = getFolderName(currentFolder);
   const scopeName = getScopeName(currentScope);
@@ -494,8 +426,7 @@ function renderMails() {
   mailTableBody.innerHTML = visibleMails
     .map((mail) => {
       const readState = getReadState(mail);
-      const unreadClass =
-        mail.direction === "received" && readState.type === "unread" ? "unread" : "";
+      const unreadClass = mail.direction === "received" && readState.type === "unread" ? "unread" : "";
       const selectedClass = mail.id === selectedMailId ? "selected" : "";
 
       return `
@@ -506,8 +437,8 @@ function renderMails() {
           <td>${mail.direction === "sent" ? mail.to : mail.from}</td>
           <td class="subject">${mail.subject}</td>
           <td><span class="project-chip">${getProjectName(mail.projectId)}</span></td>
-          <td class="from-identity">${mail.direction === "sent" ? mail.fromIdentity : mail.toIdentity}</td>
-          <td class="author-cell">${mail.direction === "sent" ? getUserName(mail.signedBy || mail.sentBy) : "-"}</td>
+          <td>${mail.direction === "sent" ? `<span class="from-chip">${getTeamName(mail.fromAddressKey)}</span>` : "-"}</td>
+          <td>${mail.direction === "sent" ? `<span class="author-chip">${getUserName(mail.sentBy)}</span>` : "-"}</td>
           <td><span class="read-chip ${readState.type}">${readState.label}</span></td>
           <td>${renderStatus(mail.status)}</td>
           <td>${mail.date}</td>
@@ -538,30 +469,19 @@ function renderDetail(visibleMails) {
   }
 
   const readState = getReadState(mail);
-  const fromLine = `${mail.fromIdentity} <${mail.from}>`;
-  const toLine = `${mail.toIdentity} <${mail.to}>`;
-  const authorName = getUserName(mail.signedBy || mail.sentBy);
-  const signatureHtml = mail.direction === "sent"
-    ? `<div class="signature-box">${escapeHtml(buildSignature(mail.signatureType, getUserById(mail.signedBy || mail.sentBy), getAddressByEmail(mail.from)))}</div>`
-    : "";
+  const authorName = mail.direction === "sent" ? getUserName(mail.sentBy) : "-";
+  const fromLabel = mail.direction === "sent" ? getFromDisplay(mail.fromAddressKey) : mail.fromDisplay || mail.from;
 
   detailBody.className = "";
   detailBody.innerHTML = `
     <h2 class="detail-title">${mail.subject}</h2>
 
     <div class="detail-meta">
-      <div><span class="detail-label">From</span><strong>${fromLine}</strong></div>
-      <div><span class="detail-label">To</span><span>${toLine}</span></div>
-      <div><span class="detail-label">Reply-To</span><span>${mail.replyTo || mail.to}</span></div>
+      <div><span class="detail-label">From</span><strong>${fromLabel}</strong></div>
+      <div><span class="detail-label">To</span><span>${mail.to}</span></div>
+      <div><span class="detail-label">내부 작성자</span><span>${authorName}</span></div>
       <div><span class="detail-label">Date</span><span>${mail.date}</span></div>
       <div><span class="detail-label">Size</span><span>${mail.size}</span></div>
-    </div>
-
-    <div class="detail-card">
-      <h4>SEND IDENTITY</h4>
-      <p>발신 주체: <span class="identity-chip">${mail.direction === "sent" ? mail.fromIdentity : mail.toIdentity}</span></p>
-      <p>내부 작성자: <span class="signature-chip">${mail.direction === "sent" ? authorName : "수신 메일"}</span></p>
-      <p>개념: 고객에게 보이는 From은 팀이고, 실제 작성자와 서명은 사용자 기준입니다.</p>
     </div>
 
     <div class="detail-card">
@@ -577,67 +497,58 @@ function renderDetail(visibleMails) {
     </div>
 
     <div class="detail-card">
-      <h4>MESSAGE</h4>
-      <p>
-        이 영역은 메일 본문 미리보기입니다. 실제 연동 후에는 Gmail API,
-        Microsoft Graph API, NAVER WORKS Mail API에서 가져온 본문이 표시됩니다.
-      </p>
-      ${signatureHtml}
+      <h4>MESSAGE BODY</h4>
+      <div class="mail-body">${mail.bodyHtml || "본문이 없습니다."}</div>
     </div>
 
     <div class="detail-actions">
-      <button class="primary" id="detailReplyButton">답장</button>
+      <button class="primary" onclick="openReplyCompose()">답장</button>
       <button>전달</button>
       <button>프로젝트 연결</button>
       <button>담당 변경</button>
     </div>
   `;
-
-  document.getElementById("detailReplyButton").addEventListener("click", openReplyToSelectedMail);
 }
 
-function openCompose(options = {}) {
+function openCompose(preset = {}) {
   const usableAddresses = sendAddresses.filter((item) => canUseSendAddress(item));
-
-  composeTitle.textContent = options.mode === "reply" ? "답장" : "새 메일";
   composeFromSelect.innerHTML = usableAddresses
-    .map((address) => {
-      return `<option value="${address.key}">${address.displayName} <${address.address}></option>`;
-    })
+    .map((item) => `<option value="${item.key}">${item.displayName} &lt;${item.address}&gt;</option>`)
     .join("");
 
-  const defaultAddress = getDefaultComposeAddress(usableAddresses, options.replyMail);
-  composeFromSelect.value = defaultAddress ? defaultAddress.key : usableAddresses[0]?.key;
+  const defaultFromKey = preset.fromAddressKey || (getAddressByKey(currentScope) ? currentScope : usableAddresses[0]?.key);
+  composeFromSelect.value = defaultFromKey;
 
-  composeSignatureSelect.innerHTML = signatureTemplates
-    .map((signature) => `<option value="${signature.id}">${signature.label}</option>`)
-    .join("");
+  composeSignatureSelect.innerHTML = [
+    `<option value="${currentUser.id}">${currentUser.name} 개인 서명</option>`,
+    `<option value="team">팀 서명</option>`,
+    `<option value="none">서명 없음</option>`,
+  ].join("");
 
-  composeSignatureSelect.value = "user-default";
-  composeAuthorInput.value = `${currentUser.name} · ${currentUser.dept} · ${currentUser.title}`;
-  composeToInput.value = options.to || "";
-  composeSubjectInput.value = options.subject || "";
-  composeBodyInput.value = options.body || "";
+  composeSignatureSelect.value = preset.signatureUserId || currentUser.id;
+  composeToInput.value = preset.to || "";
+  composeSubjectInput.value = preset.subject || "";
+  composeBodyInput.value = preset.bodyText || "안녕하세요.\n\n";
 
-  updateComposeSignaturePreview();
   composeModal.classList.remove("hidden");
+  renderComposePreview();
 }
 
-function openReplyToSelectedMail() {
+function openReplyCompose() {
   const visibleMails = getVisibleMails();
-  const mail = visibleMails.find((item) => item.id === selectedMailId);
+  const selected = visibleMails.find((item) => item.id === selectedMailId);
 
-  if (!mail) return;
-
-  const replyTo = mail.direction === "sent" ? mail.to : mail.from;
-  const subject = mail.subject.startsWith("Re:") ? mail.subject : `Re: ${mail.subject}`;
+  if (!selected) {
+    openCompose();
+    return;
+  }
 
   openCompose({
-    mode: "reply",
-    replyMail: mail,
-    to: replyTo,
-    subject,
-    body: `\n\n----- Original Message -----\nFrom: ${mail.fromIdentity} <${mail.from}>\nTo: ${mail.toIdentity} <${mail.to}>\nSubject: ${mail.subject}\n`,
+    fromAddressKey: selected.fromAddressKey || getDefaultAddressKeyForUser(),
+    to: selected.direction === "received" ? selected.from : selected.to,
+    subject: selected.subject.startsWith("Re:") ? selected.subject : `Re: ${selected.subject}`,
+    bodyText: "안녕하세요.\n\n문의주신 내용 확인했습니다.\n아래와 같이 회신드립니다.\n",
+    signatureUserId: currentUser.id,
   });
 }
 
@@ -645,111 +556,157 @@ function closeCompose() {
   composeModal.classList.add("hidden");
 }
 
-function updateComposeSignaturePreview() {
-  const address = getAddressByKey(composeFromSelect.value);
-  const signatureId = composeSignatureSelect.value;
-  signaturePreview.textContent = buildSignature(signatureId, currentUser, address);
+function renderComposePreview() {
+  const bodyText = composeBodyInput.value;
+  const signatureHtml = getSelectedSignatureHtml();
+  composePreview.innerHTML = `${textToHtml(bodyText)}${signatureHtml}`;
+}
+
+function getSelectedSignatureHtml() {
+  const signatureValue = composeSignatureSelect.value;
+  const fromAddress = getAddressByKey(composeFromSelect.value);
+
+  if (signatureValue === "none") return "";
+
+  if (signatureValue === "team") {
+    return renderTeamSignature(fromAddress);
+  }
+
+  const signatureUser = users.find((user) => user.id === signatureValue) || currentUser;
+  return renderUserSignature(signatureUser, fromAddress);
 }
 
 function sendDemoMail() {
-  const address = getAddressByKey(composeFromSelect.value);
-  const signatureId = composeSignatureSelect.value;
+  const fromAddress = getAddressByKey(composeFromSelect.value);
+  const signatureValue = composeSignatureSelect.value;
+  const signatureUserId = signatureValue === "team" || signatureValue === "none" ? "" : signatureValue;
+  const nextId = Math.max(...mails.map((mail) => mail.id)) + 1;
+  const now = new Date();
+  const dateText = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-  if (!address) return;
-
-  const newMail = {
-    id: getNextMailId(),
+  mails.unshift({
+    id: nextId,
     direction: "sent",
-    from: address.address,
-    fromIdentity: address.displayName,
+    from: fromAddress.address,
+    fromName: fromAddress.displayName,
+    fromDisplay: getFromDisplay(fromAddress.key),
     to: composeToInput.value.trim() || "customer@example.com",
-    toIdentity: "Customer",
-    replyTo: address.replyTo,
     sentBy: currentUser.id,
-    signedBy: currentUser.id,
-    signatureType: signatureId,
+    authorId: currentUser.id,
+    signatureUserId,
+    fromAddressKey: fromAddress.key,
     myUsers: [currentUser.id],
-    subject: composeSubjectInput.value.trim() || "(제목 없음)",
-    date: getNowText(),
-    size: "12.4 KB",
+    subject: composeSubjectInput.value.trim() || "제목 없음",
+    date: dateText,
+    size: "12 KB",
     hasAttachment: false,
     starred: false,
-    dept: address.defaultDept,
-    projectId: currentProjectId !== "all" ? currentProjectId : "s4212247",
+    dept: currentUser.dept === "전체" ? "영업팀" : currentUser.dept,
+    projectId: currentProjectId === "all" ? "s4212247" : currentProjectId,
     status: "처리완료",
     readBy: [currentUser.id],
     requiredReaders: [currentUser.id],
-  };
-
-  mails.unshift(newMail);
-  currentFolder = "sent";
-  selectedMailId = newMail.id;
-
-  document.querySelectorAll("#folderList li").forEach((li) => {
-    li.classList.toggle("active", li.dataset.folder === "sent");
+    bodyHtml: composePreview.innerHTML,
   });
 
+  currentScope = fromAddress.key;
+  currentFolder = "sent";
+  selectedMailId = nextId;
+  setActiveBySelector("#folderList li", "folder", "sent");
   closeCompose();
+  renderScopeTabs();
   renderMails();
 }
 
-function buildSignature(signatureId, user, address) {
-  if (!user || !address || signatureId === "none") return "";
+function createSentMail({ id, fromAddressKey, to, authorId, signatureUserId, subject, date, size, hasAttachment, dept, projectId, bodyText }) {
+  const address = getAddressByKey(fromAddressKey);
+  const signatureUser = users.find((user) => user.id === signatureUserId);
 
-  if (signatureId === "team-default") {
-    return [
-      "--",
-      address.displayName,
-      "MONAS Progressive Cavity Pump Solutions",
-      `Email. ${address.address}`,
-      "Web. www.monas.co.kr",
-    ].join("\n");
-  }
-
-  return [
-    "--",
-    user.name,
-    user.title,
-    user.dept,
-    "MONAS",
-    `Tel. ${user.phone}`,
-    `Mobile. ${user.mobile}`,
-    `Email. ${address.address}`,
-    "",
-    "MONAS Progressive Cavity Pump Solutions",
-  ].join("\n");
+  return {
+    id,
+    direction: "sent",
+    from: address.address,
+    fromName: address.displayName,
+    fromDisplay: getFromDisplay(fromAddressKey),
+    to,
+    sentBy: authorId,
+    authorId,
+    signatureUserId,
+    fromAddressKey,
+    myUsers: [authorId],
+    subject,
+    date,
+    size,
+    hasAttachment,
+    starred: false,
+    dept,
+    projectId,
+    status: "처리완료",
+    readBy: [authorId],
+    requiredReaders: [authorId],
+    bodyHtml: `${textToHtml(bodyText)}${renderUserSignature(signatureUser, address)}`,
+  };
 }
 
-function getDefaultComposeAddress(usableAddresses, replyMail) {
-  if (replyMail) {
-    const matched = usableAddresses.find((address) => {
-      return address.address === replyMail.to || address.address === replyMail.from;
-    });
+function renderUserSignature(user, fromAddress) {
+  return `
+    <div class="mail-signature">
+      <strong>${user.name}</strong><br>
+      <span>${user.title} / ${user.dept}</span><br>
+      <span class="company">MONAS</span><br>
+      <span>Tel. ${user.phone}</span><br>
+      <span>Mobile. ${user.mobile}</span><br>
+      <span>Email. ${fromAddress.address}</span><br>
+      <span class="muted">${fromAddress.teamName}으로 발송된 메일입니다.</span>
+    </div>
+  `;
+}
 
-    if (matched) return matched;
-  }
+function renderTeamSignature(fromAddress) {
+  return `
+    <div class="mail-signature">
+      <strong>${fromAddress.teamName}</strong><br>
+      <span class="company">MONAS</span><br>
+      <span>Email. ${fromAddress.address}</span><br>
+      <span class="muted">This message was sent by ${fromAddress.teamName}.</span>
+    </div>
+  `;
+}
 
-  if (currentScope !== "company" && currentScope !== "personal") {
-    const scoped = usableAddresses.find((address) => address.key === currentScope);
-    if (scoped) return scoped;
-  }
+function textToHtml(text) {
+  const escaped = escapeHtml(text.trim());
+  if (!escaped) return "";
+  return escaped
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
 
-  const deptMatched = usableAddresses.find((address) => address.defaultDept === currentUser.dept);
-  return deptMatched || usableAddresses[0];
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function canUseSendAddress(addressItem) {
+  if (currentUser.role === "admin") return true;
+  return addressItem.allowedUsers.includes(currentUser.id) || addressItem.allowedDepts.includes(currentUser.dept);
 }
 
 function getAddressByKey(key) {
   return sendAddresses.find((item) => item.key === key);
 }
 
-function getAddressByEmail(email) {
-  return sendAddresses.find((item) => item.address === email);
+function getDefaultAddressKeyForUser() {
+  return sendAddresses.find((item) => canUseSendAddress(item))?.key || "sales";
 }
 
 function getScopeName(scope) {
   if (scope === "company") return "전체";
   if (scope === "personal") return "개인";
-
   const address = getAddressByKey(scope);
   return address ? address.label : "전체";
 }
@@ -764,7 +721,6 @@ function getFolderName(folder) {
     spam: "스팸 메일함",
     trash: "휴지통",
   };
-
   return map[folder] || "전체 메일함";
 }
 
@@ -773,35 +729,35 @@ function getProjectName(projectId) {
   return project ? project.name : "미분류";
 }
 
-function getUserById(userId) {
-  return users.find((item) => item.id === userId);
-}
-
 function getUserName(userId) {
-  const user = getUserById(userId);
+  const user = users.find((item) => item.id === userId);
   return user ? user.name : "-";
 }
 
+function getTeamName(addressKey) {
+  const address = getAddressByKey(addressKey);
+  return address ? address.teamName : "-";
+}
+
+function getFromDisplay(addressKey) {
+  const address = getAddressByKey(addressKey);
+  return address ? `${address.displayName} <${address.address}>` : "-";
+}
+
 function getReadState(mail) {
-  if (mail.direction === "sent") {
-    return { type: "me", label: "발송됨" };
-  }
+  if (mail.direction === "sent") return { type: "me", label: "발송됨" };
 
   const meRead = mail.readBy.includes(currentUser.id);
   const requiredAllRead = mail.requiredReaders.every((id) => mail.readBy.includes(id));
   const someoneRead = mail.readBy.length > 0;
 
-  const deptUserIds = users
-    .filter((user) => user.dept === currentUser.dept)
-    .map((user) => user.id);
-
+  const deptUserIds = users.filter((user) => user.dept === currentUser.dept).map((user) => user.id);
   const deptRead = mail.readBy.some((id) => deptUserIds.includes(id));
 
   if (requiredAllRead) return { type: "all", label: "모두 읽음" };
   if (meRead) return { type: "me", label: "내가 읽음" };
   if (deptRead) return { type: "dept", label: "부서 읽음" };
   if (someoneRead) return { type: "company", label: "회사 읽음" };
-
   return { type: "unread", label: "새 메일" };
 }
 
@@ -812,7 +768,6 @@ function renderStatus(status) {
     답변필요: "reply",
     처리완료: "done",
   };
-
   return `<span class="status-chip ${map[status] || "review"}">${status}</span>`;
 }
 
@@ -820,28 +775,6 @@ function setActiveBySelector(selector, datasetKey, value) {
   document.querySelectorAll(selector).forEach((item) => {
     item.classList.toggle("active", item.dataset[datasetKey] === value);
   });
-}
-
-function getNextMailId() {
-  return Math.max(...mails.map((mail) => mail.id)) + 1;
-}
-
-function getNowText() {
-  const now = new Date();
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mi = String(now.getMinutes()).padStart(2, "0");
-
-  return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
-}
-
-function escapeHtml(text) {
-  return String(text || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
 }
 
 init();
