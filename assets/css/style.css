@@ -431,3 +431,30 @@ input[type="checkbox"] {
   accent-color: var(--green);
   cursor: pointer;
 }
+
+.scope-tabs {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 26px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.scope-tabs button {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid #d9e1e8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #526173;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scope-tabs button.active {
+  background: var(--green-soft);
+  border-color: #b7ead5;
+  color: #0b8f5b;
+}

@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Monasync Mail</title>
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
+
 <body>
   <header class="topbar">
     <div class="logo">MONASYNC</div>
@@ -30,14 +32,14 @@
 
       <section class="side-section">
         <h3>메일함</h3>
-        <ul class="folders">
-          <li class="active">전체 메일함</li>
-          <li>받은 메일함 <span>5</span></li>
-          <li>내게 쓴 메일함</li>
-          <li>보낸 메일함</li>
-          <li>메일 보관함</li>
-          <li>스팸 메일함</li>
-          <li>휴지통</li>
+        <ul class="folders" id="folderList">
+          <li class="active" data-folder="all">전체 메일함</li>
+          <li data-folder="inbox">받은 메일함 <span>5</span></li>
+          <li data-folder="self">내게 쓴 메일함</li>
+          <li data-folder="sent">보낸 메일함</li>
+          <li data-folder="archive">메일 보관함</li>
+          <li data-folder="spam">스팸 메일함</li>
+          <li data-folder="trash">휴지통</li>
         </ul>
       </section>
 
@@ -63,6 +65,11 @@
           <p id="userInfo"></p>
         </div>
         <input id="searchInput" placeholder="메일 검색" />
+      </section>
+
+      <section class="scope-tabs">
+        <button class="active" data-scope="company">전체메일함</button>
+        <button data-scope="personal">개인메일함</button>
       </section>
 
       <section class="toolbar">
@@ -97,4 +104,5 @@
 
   <script src="./assets/js/app.js"></script>
 </body>
+
 </html>

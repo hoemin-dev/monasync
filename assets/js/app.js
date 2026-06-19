@@ -15,6 +15,10 @@ const projects = [
 const mails = [
   {
     id: 1,
+    box: "inbox",
+    to: "sales@monas.co.kr",
+    sentBy: "",
+    myUsers: ["sales01"],
     from: "문미리내",
     subject: "P4 그리동 6월 19일 설비 검증 계획 송부 건",
     date: "2026.06.18 16:01",
@@ -29,6 +33,10 @@ const mails = [
   },
   {
     id: 2,
+    box: "inbox",
+    to: "sales@monas.co.kr",
+    sentBy: "",
+    myUsers: ["sales01"],
     from: "Minsu KIM",
     subject: "Zuluf MGA310 Progressive Cavity Pump Tech clarification",
     date: "2026.06.18 10:22",
@@ -43,6 +51,10 @@ const mails = [
   },
   {
     id: 3,
+    box: "inbox",
+    to: "sales@monas.co.kr",
+    sentBy: "",
+    myUsers: ["sales01"],
     from: "sales@customer.com",
     subject: "S4212247 견적 요청드립니다",
     date: "2026.06.17 17:45",
@@ -57,6 +69,10 @@ const mails = [
   },
   {
     id: 4,
+    box: "inbox",
+    to: "sales@monas.co.kr",
+    sentBy: "",
+    myUsers: ["sales01"],
     from: "bearing-vendor",
     subject: "Bearing Housing 가공 단가 회신",
     date: "2026.06.17 13:11",
@@ -71,6 +87,10 @@ const mails = [
   },
   {
     id: 5,
+    box: "inbox",
+    to: "sales@monas.co.kr",
+    sentBy: "",
+    myUsers: ["sales01"],
     from: "info@partner.co.kr",
     subject: "6월 납기 일정 확인 요청",
     date: "2026.06.16 09:28",
@@ -86,6 +106,8 @@ const mails = [
 ];
 
 let currentUser = users[0];
+let currentScope = "company"; // company | personal
+let currentFolder = "all"; // all | inbox | sent ...
 
 const userSelect = document.getElementById("userSelect");
 const userInfo = document.getElementById("userInfo");
@@ -106,6 +128,29 @@ function init() {
   });
 
   searchInput.addEventListener("input", renderMails);
+  document.querySelectorAll(".scope-tabs button").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".scope-tabs button").forEach((btn) => {
+        btn.classList.remove("active");
+      });
+
+      button.classList.add("active");
+      currentScope = button.dataset.scope;
+      renderMails();
+    });
+  });
+
+  document.querySelectorAll("#folderList li").forEach((item) => {
+    item.addEventListener("click", () => {
+      document.querySelectorAll("#folderList li").forEach((li) => {
+        li.classList.remove("active");
+      });
+
+      item.classList.add("active");
+      currentFolder = item.dataset.folder;
+      renderMails();
+    });
+  });
 }
 
 function renderUserSelect() {
@@ -119,9 +164,50 @@ function renderUserSelect() {
 }
 
 function renderProjects() {
-  const visibleProjects = projects.filter((project) => {
-    if (currentUser.role === "admin") return true;
-    return project.dept === currentUser.dept;
+  const visibleMails = mails.filter((mail) => {
+    const canSee =
+      currentUser.role === "admin" ||
+      mail.dept === currentUser.dept ||
+      mail.dept === "전체";
+
+    const matched =
+      mail.from.toLowerCase().includes(keyword) ||
+      mail.to.toLowerCase().includes(keyword) ||
+      mail.subject.toLowerCase().includes(keyword) ||
+      getProjectName(mail.projectId).toLowerCase().includes(keyword);
+
+    if (!matched) return false;
+
+    if (currentScope === "personal") {
+      if (currentFolder === "inbox") {
+        return mail.box === "inbox" && mail.myUsers.includes(currentUser.id);
+      }
+
+      if (currentFolder === "sent") {
+        return mail.box === "sent" && mail.sentBy === currentUser.id;
+      }
+
+      if (currentFolder === "all") {
+        return (
+          mail.myUsers.includes(currentUser.id) ||
+          mail.sentBy === currentUser.id
+        );
+      }
+
+      return false;
+    }
+
+    if (currentScope === "company") {
+      if (!canSee) return false;
+
+      if (currentFolder === "inbox") return mail.box === "inbox";
+      if (currentFolder === "sent") return mail.box === "sent";
+      if (currentFolder === "all") return true;
+
+      return false;
+    }
+
+    return false;
   });
 
   projectList.innerHTML = visibleProjects
@@ -159,7 +245,8 @@ function renderMails() {
           <td><input type="checkbox" /></td>
           <td>${mail.starred ? "★" : "☆"}</td>
           <td>${mail.hasAttachment ? "📎" : ""}</td>
-          <td>${mail.from}</td>
+          <td>${mail.box === "sent" ? mail.to : mail.from}</td>
+          <td>${getUserName(mail.sentBy)}</td>
           <td class="subject">${mail.subject}</td>
           <td>${getProjectName(mail.projectId)}</td>
           <td><span class="read-chip ${readState.type}">${readState.label}</span></td>
@@ -179,7 +266,9 @@ function getProjectName(projectId) {
 
 function getReadState(mail) {
   const meRead = mail.readBy.includes(currentUser.id);
-  const requiredAllRead = mail.requiredReaders.every((id) => mail.readBy.includes(id));
+  const requiredAllRead = mail.requiredReaders.every((id) =>
+    mail.readBy.includes(id),
+  );
   const someoneRead = mail.readBy.length > 0;
 
   const deptUserIds = users
@@ -216,6 +305,11 @@ function renderStatus(status) {
   };
 
   return `<span class="status-chip ${map[status] || "review"}">${status}</span>`;
+}
+
+function getUserName(userId) {
+  const user = users.find((item) => item.id === userId);
+  return user ? user.name : "-";
 }
 
 init();
