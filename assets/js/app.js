@@ -173,6 +173,7 @@ const mails = [
 let currentUser = users[0];
 let currentScope = "company";
 let currentFolder = "all";
+let currentProjectId = "all";
 
 const userSelect = document.getElementById("userSelect");
 const userInfo = document.getElementById("userInfo");
@@ -191,6 +192,7 @@ function init() {
   userSelect.addEventListener("change", () => {
     currentUser = users.find((user) => user.id === userSelect.value);
     currentScope = "company";
+    currentProjectId = "all";
     renderScopeTabs();
     renderProjects();
     renderMails();
@@ -213,7 +215,10 @@ function init() {
 
 function renderUserSelect() {
   userSelect.innerHTML = users
-    .map((user) => `<option value="${user.id}">${user.name} · ${user.dept}</option>`)
+    .map(
+      (user) =>
+        `<option value="${user.id}">${user.name} · ${user.dept}</option>`,
+    )
     .join("");
 
   userSelect.value = currentUser.id;
@@ -260,9 +265,21 @@ function renderProjects() {
     return project.dept === currentUser.dept;
   });
 
-  projectList.innerHTML = visibleProjects
-    .map((project) => `<li>${project.name}</li>`)
-    .join("");
+  projectList.innerHTML = [
+    `<li class="${currentProjectId === "all" ? "active" : ""}" data-project-id="all">전체 프로젝트</li>`,
+    ...visibleProjects.map((project) => {
+      const activeClass = currentProjectId === project.id ? "active" : "";
+      return `<li class="${activeClass}" data-project-id="${project.id}">${project.name}</li>`;
+    }),
+  ].join("");
+
+  document.querySelectorAll("#projectList li").forEach((item) => {
+    item.addEventListener("click", () => {
+      currentProjectId = item.dataset.projectId;
+      renderProjects();
+      renderMails();
+    });
+  });
 }
 
 function renderMails() {
@@ -283,9 +300,15 @@ function renderMails() {
 
     if (!matched) return false;
 
+    if (currentProjectId !== "all" && mail.projectId !== currentProjectId) {
+      return false;
+    }
+
     if (currentScope === "personal") {
       if (currentFolder === "inbox") {
-        return mail.direction === "received" && mail.myUsers.includes(currentUser.id);
+        return (
+          mail.direction === "received" && mail.myUsers.includes(currentUser.id)
+        );
       }
 
       if (currentFolder === "sent") {
@@ -293,7 +316,10 @@ function renderMails() {
       }
 
       if (currentFolder === "all") {
-        return mail.myUsers.includes(currentUser.id) || mail.sentBy === currentUser.id;
+        return (
+          mail.myUsers.includes(currentUser.id) ||
+          mail.sentBy === currentUser.id
+        );
       }
 
       return false;
@@ -341,7 +367,9 @@ function renderMails() {
     .map((mail) => {
       const readState = getReadState(mail);
       const unreadClass =
-        mail.direction === "received" && readState.type === "unread" ? "unread" : "";
+        mail.direction === "received" && readState.type === "unread"
+          ? "unread"
+          : "";
 
       return `
         <tr class="${unreadClass}">
@@ -404,7 +432,9 @@ function getReadState(mail) {
   }
 
   const meRead = mail.readBy.includes(currentUser.id);
-  const requiredAllRead = mail.requiredReaders.every((id) => mail.readBy.includes(id));
+  const requiredAllRead = mail.requiredReaders.every((id) =>
+    mail.readBy.includes(id),
+  );
   const someoneRead = mail.readBy.length > 0;
 
   const deptUserIds = users
