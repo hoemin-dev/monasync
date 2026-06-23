@@ -874,3 +874,326 @@ input[type="checkbox"] {
   border-color: var(--green);
   color: white;
 }
+
+.hidden {
+  display: none !important;
+}
+
+.main {
+  grid-template-rows: 48px 54px 66px 54px 1fr;
+}
+
+.scope-tabs-row {
+  height: 48px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  background: #243246;
+}
+
+.scope-tabs-row .scope-tabs {
+  background: transparent;
+}
+
+.scope-user-area {
+  min-width: 330px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 18px 0 10px;
+  color: #dce4ed;
+  white-space: nowrap;
+}
+
+.scope-user-label {
+  color: #aebbd0;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.scope-user-area select {
+  height: 32px;
+  min-width: 142px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  background: #38485f;
+  color: #ffffff;
+  padding: 0 8px;
+  outline: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mypage-button {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  background: #38485f;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mypage-button:hover,
+.mypage-button.active {
+  background: #ffffff;
+  color: #17212f;
+}
+
+.mypage-view {
+  min-height: 0;
+  overflow: auto;
+  background: #f4f7fb;
+  padding: 22px;
+}
+
+.mypage-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.profile-card,
+.mypage-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+.profile-card {
+  min-height: 128px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.profile-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.profile-card h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.profile-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mypage-card {
+  padding: 18px;
+}
+
+.mypage-card.wide {
+  grid-column: 1 / -1;
+}
+
+.mypage-card h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.profile-list {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 10px 12px;
+  margin: 0;
+}
+
+.profile-list dt {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.profile-list dd {
+  margin: 0;
+  color: #334155;
+  font-weight: 700;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-title-row h3 {
+  margin: 0;
+}
+
+.help-text {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.permission-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.permission-table th,
+.permission-table td {
+  height: 42px;
+  border-bottom: 1px solid #edf1f4;
+  text-align: center;
+  color: #3d4d61;
+}
+
+.permission-table th {
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.permission-table th:first-child,
+.permission-table td:first-child,
+.permission-table th:nth-child(2),
+.permission-table td:nth-child(2),
+.permission-table th:last-child,
+.permission-table td:last-child {
+  text-align: left;
+}
+
+.permission-desc {
+  color: #64748b;
+}
+
+.check-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #e5f7ee;
+  color: #0b8f5b;
+  font-weight: 900;
+}
+
+.dash-mark {
+  color: #cbd5e1;
+  font-weight: 900;
+}
+
+.idea-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.idea-list span {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3f4ca3;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+/* My Page layout fix: hidden grid items were causing My Page to occupy the toolbar row. */
+.main.mypage-mode {
+  grid-template-rows: 48px 54px 66px 1fr;
+}
+
+.main.mypage-mode .mypage-view {
+  grid-row: 4;
+}
+
+.main:not(.mypage-mode) .content-grid {
+  grid-row: 5;
+}
+
+.main.mypage-mode .titlebar {
+  border-bottom: 1px solid var(--line);
+}
+
+.main.mypage-mode .topbar {
+  justify-content: flex-start;
+}
+
+.main.mypage-mode .mypage-grid {
+  align-content: start;
+}
+
+.signature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.signature-logo {
+  width: 110px;
+  height: auto;
+  margin-top: 4px;
+}
+
+.signature-info {
+  display: grid;
+  gap: 4px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.signature-info strong {
+  font-size: 15px;
+  color: #111827;
+}
+
+.signature-company {
+  color: var(--green-dark);
+  font-weight: 900;
+}
+
+.signature-address-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.signature-address-row select {
+  height: 34px;
+  min-width: 280px;
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  padding: 0 10px;
+}
+
+.signature-muted {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 11px;
+}

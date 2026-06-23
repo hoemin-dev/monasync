@@ -192,7 +192,8 @@ let mails = [
     hasAttachment: true,
     dept: "영업팀",
     projectId: "mga310",
-    bodyText: "안녕하세요.\n\n요청하신 MGA310 견적서 송부드립니다.\n첨부파일 확인 부탁드립니다.",
+    bodyText:
+      "안녕하세요.\n\n요청하신 MGA310 견적서 송부드립니다.\n첨부파일 확인 부탁드립니다.",
   }),
   createSentMail({
     id: 6,
@@ -206,7 +207,8 @@ let mails = [
     hasAttachment: true,
     dept: "기술팀",
     projectId: "p4",
-    bodyText: "안녕하세요.\n\nP4 그리동 설비 검증 자료 송부드립니다.\n검토 후 의견 부탁드립니다.",
+    bodyText:
+      "안녕하세요.\n\nP4 그리동 설비 검증 자료 송부드립니다.\n검토 후 의견 부탁드립니다.",
   }),
   createSentMail({
     id: 7,
@@ -220,7 +222,8 @@ let mails = [
     hasAttachment: true,
     dept: "영업팀",
     projectId: "s4212247",
-    bodyText: "Dear Customer,\n\nPlease find attached our quotation for the progressive cavity pump.\nWe look forward to your feedback.",
+    bodyText:
+      "Dear Customer,\n\nPlease find attached our quotation for the progressive cavity pump.\nWe look forward to your feedback.",
   }),
 ];
 
@@ -230,8 +233,21 @@ let currentFolder = "all";
 let currentProjectId = "all";
 let currentDept = "all";
 let selectedMailId = null;
+let currentView = "mail";
+let defaultSignatureAddressKey = "sales";
 
 const userSelect = document.getElementById("userSelect");
+const myPageButton = document.getElementById("myPageButton");
+const mailView = document.getElementById("mailView");
+const myPageView = document.getElementById("myPageView");
+const mainEl = document.querySelector(".main");
+const mailToolbar = document.getElementById("mailToolbar");
+const searchWrap = document.getElementById("searchWrap");
+const permissionTableBody = document.getElementById("permissionTableBody");
+const profileAvatar = document.getElementById("profileAvatar");
+const profileName = document.getElementById("profileName");
+const profileSub = document.getElementById("profileSub");
+const profileList = document.getElementById("profileList");
 const userInfo = document.getElementById("userInfo");
 const mailTableBody = document.getElementById("mailTableBody");
 const projectList = document.getElementById("projectList");
@@ -245,19 +261,26 @@ const composeModal = document.getElementById("composeModal");
 const composeCloseButton = document.getElementById("composeCloseButton");
 const composeCancelButton = document.getElementById("composeCancelButton");
 const composeFromSelect = document.getElementById("composeFromSelect");
-const composeSignatureSelect = document.getElementById("composeSignatureSelect");
+const composeSignatureSelect = document.getElementById(
+  "composeSignatureSelect",
+);
 const composeToInput = document.getElementById("composeToInput");
 const composeSubjectInput = document.getElementById("composeSubjectInput");
 const composeBodyInput = document.getElementById("composeBodyInput");
 const composePreview = document.getElementById("composePreview");
 const sendDemoButton = document.getElementById("sendDemoButton");
 const toolbarReplyButton = document.getElementById("toolbarReplyButton");
+const signatureCard = document.getElementById("signatureCard");
+const signatureAddressSelect = document.getElementById(
+  "signatureAddressSelect",
+);
 
 function init() {
   renderUserSelect();
   renderScopeTabs();
   renderProjects();
   renderMails();
+  renderMyPage();
   bindEvents();
 }
 
@@ -269,17 +292,41 @@ function bindEvents() {
     currentDept = "all";
     selectedMailId = null;
 
+    signatureAddressSelect.addEventListener("change", () => {
+      defaultSignatureAddressKey = signatureAddressSelect.value;
+      renderMyPage();
+    });
+
     setActiveBySelector("#deptList li", "dept", "all");
     renderScopeTabs();
     renderProjects();
     renderMails();
+    renderMyPage();
   });
 
   searchInput.addEventListener("input", renderMails);
 
+  myPageButton.addEventListener("click", () => {
+    setView(currentView === "mypage" ? "mail" : "mypage");
+  });
+
+  document.querySelectorAll('[data-view="mail"]').forEach((button) => {
+    button.addEventListener("click", () => setView("mail"));
+  });
+
+  document.querySelectorAll('[data-view="mypage"]').forEach((button) => {
+    button.addEventListener("click", () => setView("mypage"));
+  });
+
+  document.querySelectorAll('[data-view-button="mail"]').forEach((button) => {
+    button.addEventListener("click", () => setView("mail"));
+  });
+
   document.querySelectorAll("#folderList li").forEach((item) => {
     item.addEventListener("click", () => {
-      document.querySelectorAll("#folderList li").forEach((li) => li.classList.remove("active"));
+      document
+        .querySelectorAll("#folderList li")
+        .forEach((li) => li.classList.remove("active"));
       item.classList.add("active");
       currentFolder = item.dataset.folder;
       selectedMailId = null;
@@ -289,7 +336,9 @@ function bindEvents() {
 
   document.querySelectorAll("#deptList li").forEach((item) => {
     item.addEventListener("click", () => {
-      document.querySelectorAll("#deptList li").forEach((li) => li.classList.remove("active"));
+      document
+        .querySelectorAll("#deptList li")
+        .forEach((li) => li.classList.remove("active"));
       item.classList.add("active");
       currentDept = item.dataset.dept;
       currentProjectId = "all";
@@ -311,9 +360,162 @@ function bindEvents() {
   sendDemoButton.addEventListener("click", sendDemoMail);
 }
 
+function setView(view) {
+  currentView = view;
+  const isMail = view === "mail";
+
+  mailView.classList.toggle("hidden", !isMail);
+  myPageView.classList.toggle("hidden", isMail);
+  mailToolbar.classList.toggle("hidden", !isMail);
+  searchWrap.classList.toggle("hidden", !isMail);
+  myPageButton.classList.toggle("active", !isMail);
+  mainEl.classList.toggle("mypage-mode", !isMail);
+
+  document.querySelectorAll(".rail-item").forEach((button) => {
+    const buttonView = button.dataset.view || "";
+    button.classList.toggle("active", buttonView === view);
+  });
+
+  if (isMail) {
+    renderMails();
+    return;
+  }
+
+  renderMyPage();
+}
+
+function renderMyPage() {
+  profileAvatar.textContent = currentUser.name.slice(0, 1);
+  profileName.textContent = currentUser.name;
+  profileSub.textContent = `${currentUser.role === "admin" ? "관리자" : "일반 사용자"} · ${currentUser.dept}`;
+
+  profileList.innerHTML = `
+    <dt>이메일</dt><dd>${currentUser.email}</dd>
+    <dt>직책</dt><dd>${currentUser.title}</dd>
+    <dt>부서</dt><dd>${currentUser.dept}</dd>
+    <dt>전화</dt><dd>${currentUser.phone}</dd>
+    <dt>휴대폰</dt><dd>${currentUser.mobile}</dd>
+  `;
+
+  const rows = getPermissionRows();
+  permissionTableBody.innerHTML = rows
+    .map(
+      (row) => `
+      <tr>
+        <td><strong>${row.name}</strong></td>
+        <td>${row.type}</td>
+        <td>${checkMark(row.canRead)}</td>
+        <td>${checkMark(row.canSend)}</td>
+        <td>${checkMark(row.inPersonal)}</td>
+        <td>${checkMark(row.deptAllowed)}</td>
+        <td>${checkMark(row.canUseSignature)}</td>
+        <td>${checkMark(row.canManage)}</td>
+        <td class="permission-desc">${row.desc}</td>
+      </tr>
+    `,
+    )
+    .join("");
+
+  const usableAddresses = sendAddresses.filter(a => canUseSendAddress(a));
+
+if (!usableAddresses.some(a => a.key === defaultSignatureAddressKey)) {
+  defaultSignatureAddressKey = usableAddresses[0]?.key || "";
+}
+
+signatureAddressSelect.innerHTML = usableAddresses
+  .map(a => `<option value="${a.key}">${a.displayName} &lt;${a.address}&gt;</option>`)
+  .join("");
+
+signatureAddressSelect.value = defaultSignatureAddressKey;
+
+const defaultAddress = getAddressByKey(defaultSignatureAddressKey);
+
+signatureCard.innerHTML = `
+  <div class="signature-card">
+    <img src="./assets/img/logo.svg" class="signature-logo" alt="MONAS">
+
+    <div class="signature-info">
+      <strong>${currentUser.name}</strong>
+      <div>${currentUser.title} / ${currentUser.dept}</div>
+
+      <div class="signature-company">
+        MONAS Progressive Cavity Pumps
+      </div>
+
+      <div>Tel. ${currentUser.phone}</div>
+      <div>Mobile. ${currentUser.mobile}</div>
+      <div>Email. ${defaultAddress.address}</div>
+      <div class="signature-muted">${defaultAddress.teamName} 기준 서명입니다.</div>
+    </div>
+  </div>
+`;
+
+  if (currentView === "mypage") {
+    pageTitle.innerHTML = `My Page <span>${currentUser.name} 권한 현황</span>`;
+    userInfo.textContent =
+      "현재 사용자가 접근 가능한 메일함, 발신주소, 서명 기준을 한 번에 확인합니다.";
+  }
+}
+
+function getPermissionRows() {
+  const isAdmin = currentUser.role === "admin";
+  const baseRows = [
+    {
+      name: "전체 메일함",
+      type: "공용",
+      canRead: true,
+      canSend: false,
+      inPersonal: false,
+      deptAllowed: true,
+      canUseSignature: false,
+      canManage: isAdmin,
+      desc: isAdmin
+        ? "모든 부서 메일 열람"
+        : `${currentUser.dept} 기준 공용 메일 열람`,
+    },
+    {
+      name: "개인 메일함",
+      type: "개인",
+      canRead: true,
+      canSend: true,
+      inPersonal: true,
+      deptAllowed: true,
+      canUseSignature: true,
+      canManage: false,
+      desc: "내가 담당자로 지정된 수신메일과 내가 작성한 발신메일",
+    },
+  ];
+
+  const addressRows = sendAddresses.map((address) => {
+    const canUse = canUseSendAddress(address);
+    return {
+      name: address.address,
+      type: "대표주소",
+      canRead: canUse,
+      canSend: canUse,
+      inPersonal: canUse,
+      deptAllowed: isAdmin || address.allowedDepts.includes(currentUser.dept),
+      canUseSignature: canUse,
+      canManage: isAdmin,
+      desc: `${address.teamName} 권한자: ${address.allowedUsers.map(getUserName).join(", ")}`,
+    };
+  });
+
+  return [...baseRows, ...addressRows];
+}
+
+function checkMark(value) {
+  return value
+    ? '<span class="check-mark">v</span>'
+    : '<span class="dash-mark">-</span>';
+}
+
 function renderUserSelect() {
   userSelect.innerHTML = users
-    .map((user) => `<option value="${user.id}">${user.name} · ${user.dept}</option>`)
+    .map(
+      (user) =>
+        `<option value="${user.id}">${user.name} · ${user.dept}</option>`,
+    )
     .join("");
   userSelect.value = currentUser.id;
 }
@@ -326,7 +528,10 @@ function renderScopeTabs() {
   const tabs = [...baseTabs, ...addressTabs];
 
   mailScopeTabs.innerHTML = tabs
-    .map((tab) => `<button class="${tab.key === currentScope ? "active" : ""}" data-scope="${tab.key}">${tab.label}</button>`)
+    .map(
+      (tab) =>
+        `<button class="${tab.key === currentScope ? "active" : ""}" data-scope="${tab.key}">${tab.label}</button>`,
+    )
     .join("");
 
   document.querySelectorAll("#mailScopeTabs button").forEach((button) => {
@@ -350,7 +555,10 @@ function renderProjects() {
 
   projectList.innerHTML = [
     `<li class="${currentProjectId === "all" ? "active" : ""}" data-project-id="all">전체 프로젝트</li>`,
-    ...visibleProjects.map((project) => `<li class="${currentProjectId === project.id ? "active" : ""}" data-project-id="${project.id}">${project.name}</li>`),
+    ...visibleProjects.map(
+      (project) =>
+        `<li class="${currentProjectId === project.id ? "active" : ""}" data-project-id="${project.id}">${project.name}</li>`,
+    ),
   ].join("");
 
   document.querySelectorAll("#projectList li").forEach((item) => {
@@ -367,7 +575,10 @@ function getVisibleMails() {
   const keyword = searchInput.value.trim().toLowerCase();
 
   return mails.filter((mail) => {
-    const canSee = currentUser.role === "admin" || mail.dept === currentUser.dept || mail.dept === "전체";
+    const canSee =
+      currentUser.role === "admin" ||
+      mail.dept === currentUser.dept ||
+      mail.dept === "전체";
     const selectedAddress = getAddressByKey(currentScope);
 
     const matched =
@@ -379,13 +590,22 @@ function getVisibleMails() {
       getTeamName(mail.fromAddressKey).toLowerCase().includes(keyword);
 
     if (!matched) return false;
-    if (currentProjectId !== "all" && mail.projectId !== currentProjectId) return false;
+    if (currentProjectId !== "all" && mail.projectId !== currentProjectId)
+      return false;
     if (currentDept !== "all" && mail.dept !== currentDept) return false;
 
     if (currentScope === "personal") {
-      if (currentFolder === "inbox") return mail.direction === "received" && mail.myUsers.includes(currentUser.id);
-      if (currentFolder === "sent") return mail.direction === "sent" && mail.sentBy === currentUser.id;
-      if (currentFolder === "all") return mail.myUsers.includes(currentUser.id) || mail.sentBy === currentUser.id;
+      if (currentFolder === "inbox")
+        return (
+          mail.direction === "received" && mail.myUsers.includes(currentUser.id)
+        );
+      if (currentFolder === "sent")
+        return mail.direction === "sent" && mail.sentBy === currentUser.id;
+      if (currentFolder === "all")
+        return (
+          mail.myUsers.includes(currentUser.id) ||
+          mail.sentBy === currentUser.id
+        );
       return false;
     }
 
@@ -400,7 +620,9 @@ function getVisibleMails() {
     if (selectedAddress) {
       if (!canUseSendAddress(selectedAddress)) return false;
       if (!canSee) return false;
-      const addressMatched = mail.to === selectedAddress.address || mail.from === selectedAddress.address;
+      const addressMatched =
+        mail.to === selectedAddress.address ||
+        mail.from === selectedAddress.address;
       if (!addressMatched) return false;
       if (currentFolder === "inbox") return mail.direction === "received";
       if (currentFolder === "sent") return mail.direction === "sent";
@@ -415,7 +637,8 @@ function getVisibleMails() {
 function renderMails() {
   const visibleMails = getVisibleMails();
 
-  if (!selectedMailId && visibleMails.length > 0) selectedMailId = visibleMails[0].id;
+  if (!selectedMailId && visibleMails.length > 0)
+    selectedMailId = visibleMails[0].id;
 
   const folderName = getFolderName(currentFolder);
   const scopeName = getScopeName(currentScope);
@@ -426,7 +649,10 @@ function renderMails() {
   mailTableBody.innerHTML = visibleMails
     .map((mail) => {
       const readState = getReadState(mail);
-      const unreadClass = mail.direction === "received" && readState.type === "unread" ? "unread" : "";
+      const unreadClass =
+        mail.direction === "received" && readState.type === "unread"
+          ? "unread"
+          : "";
       const selectedClass = mail.id === selectedMailId ? "selected" : "";
 
       return `
@@ -470,7 +696,10 @@ function renderDetail(visibleMails) {
 
   const readState = getReadState(mail);
   const authorName = mail.direction === "sent" ? getUserName(mail.sentBy) : "-";
-  const fromLabel = mail.direction === "sent" ? getFromDisplay(mail.fromAddressKey) : mail.fromDisplay || mail.from;
+  const fromLabel =
+    mail.direction === "sent"
+      ? getFromDisplay(mail.fromAddressKey)
+      : mail.fromDisplay || mail.from;
 
   detailBody.className = "";
   detailBody.innerHTML = `
@@ -511,12 +740,19 @@ function renderDetail(visibleMails) {
 }
 
 function openCompose(preset = {}) {
-  const usableAddresses = sendAddresses.filter((item) => canUseSendAddress(item));
+  const usableAddresses = sendAddresses.filter((item) =>
+    canUseSendAddress(item),
+  );
   composeFromSelect.innerHTML = usableAddresses
-    .map((item) => `<option value="${item.key}">${item.displayName} &lt;${item.address}&gt;</option>`)
+    .map(
+      (item) =>
+        `<option value="${item.key}">${item.displayName} &lt;${item.address}&gt;</option>`,
+    )
     .join("");
 
-  const defaultFromKey = preset.fromAddressKey || (getAddressByKey(currentScope) ? currentScope : usableAddresses[0]?.key);
+  const defaultFromKey =
+    preset.fromAddressKey ||
+    (getAddressByKey(currentScope) ? currentScope : usableAddresses[0]?.key);
   composeFromSelect.value = defaultFromKey;
 
   composeSignatureSelect.innerHTML = [
@@ -546,8 +782,11 @@ function openReplyCompose() {
   openCompose({
     fromAddressKey: selected.fromAddressKey || getDefaultAddressKeyForUser(),
     to: selected.direction === "received" ? selected.from : selected.to,
-    subject: selected.subject.startsWith("Re:") ? selected.subject : `Re: ${selected.subject}`,
-    bodyText: "안녕하세요.\n\n문의주신 내용 확인했습니다.\n아래와 같이 회신드립니다.\n",
+    subject: selected.subject.startsWith("Re:")
+      ? selected.subject
+      : `Re: ${selected.subject}`,
+    bodyText:
+      "안녕하세요.\n\n문의주신 내용 확인했습니다.\n아래와 같이 회신드립니다.\n",
     signatureUserId: currentUser.id,
   });
 }
@@ -572,14 +811,18 @@ function getSelectedSignatureHtml() {
     return renderTeamSignature(fromAddress);
   }
 
-  const signatureUser = users.find((user) => user.id === signatureValue) || currentUser;
+  const signatureUser =
+    users.find((user) => user.id === signatureValue) || currentUser;
   return renderUserSignature(signatureUser, fromAddress);
 }
 
 function sendDemoMail() {
   const fromAddress = getAddressByKey(composeFromSelect.value);
   const signatureValue = composeSignatureSelect.value;
-  const signatureUserId = signatureValue === "team" || signatureValue === "none" ? "" : signatureValue;
+  const signatureUserId =
+    signatureValue === "team" || signatureValue === "none"
+      ? ""
+      : signatureValue;
   const nextId = Math.max(...mails.map((mail) => mail.id)) + 1;
   const now = new Date();
   const dateText = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -616,9 +859,23 @@ function sendDemoMail() {
   closeCompose();
   renderScopeTabs();
   renderMails();
+  renderMyPage();
 }
 
-function createSentMail({ id, fromAddressKey, to, authorId, signatureUserId, subject, date, size, hasAttachment, dept, projectId, bodyText }) {
+function createSentMail({
+  id,
+  fromAddressKey,
+  to,
+  authorId,
+  signatureUserId,
+  subject,
+  date,
+  size,
+  hasAttachment,
+  dept,
+  projectId,
+  bodyText,
+}) {
   const address = getAddressByKey(fromAddressKey);
   const signatureUser = users.find((user) => user.id === signatureUserId);
 
@@ -693,7 +950,10 @@ function escapeHtml(value) {
 
 function canUseSendAddress(addressItem) {
   if (currentUser.role === "admin") return true;
-  return addressItem.allowedUsers.includes(currentUser.id) || addressItem.allowedDepts.includes(currentUser.dept);
+  return (
+    addressItem.allowedUsers.includes(currentUser.id) ||
+    addressItem.allowedDepts.includes(currentUser.dept)
+  );
 }
 
 function getAddressByKey(key) {
@@ -748,10 +1008,14 @@ function getReadState(mail) {
   if (mail.direction === "sent") return { type: "me", label: "발송됨" };
 
   const meRead = mail.readBy.includes(currentUser.id);
-  const requiredAllRead = mail.requiredReaders.every((id) => mail.readBy.includes(id));
+  const requiredAllRead = mail.requiredReaders.every((id) =>
+    mail.readBy.includes(id),
+  );
   const someoneRead = mail.readBy.length > 0;
 
-  const deptUserIds = users.filter((user) => user.dept === currentUser.dept).map((user) => user.id);
+  const deptUserIds = users
+    .filter((user) => user.dept === currentUser.dept)
+    .map((user) => user.id);
   const deptRead = mail.readBy.some((id) => deptUserIds.includes(id));
 
   if (requiredAllRead) return { type: "all", label: "모두 읽음" };

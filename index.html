@@ -1,20 +1,22 @@
 <!doctype html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Monasync Mail</title>
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
+
 <body>
   <div class="app-shell">
     <aside class="app-rail">
       <div class="rail-logo">M</div>
-      <button class="rail-item active">✉</button>
-      <button class="rail-item">📇</button>
-      <button class="rail-item">📁</button>
-      <button class="rail-item">👥</button>
-      <button class="rail-item">⚙</button>
+      <button class="rail-item active" data-view="mail" title="Mail">✉</button>
+      <button class="rail-item" title="Contacts">📇</button>
+      <button class="rail-item" title="Files">📁</button>
+      <button class="rail-item" title="Teams">👥</button>
+      <button class="rail-item" data-view="mypage" title="My Page">⚙</button>
     </aside>
 
     <aside class="sidebar">
@@ -55,22 +57,25 @@
     </aside>
 
     <main class="main">
-      <section class="scope-tabs" id="mailScopeTabs"></section>
+      <section class="scope-tabs-row">
+        <div class="scope-tabs" id="mailScopeTabs"></div>
+
+        <div class="scope-user-area">
+          <span class="scope-user-label">현재 사용자</span>
+          <select id="userSelect"></select>
+          <button id="myPageButton" class="mypage-button">My Page</button>
+        </div>
+      </section>
 
       <header class="topbar">
         <nav class="topnav">
-          <button class="active">Mail</button>
+          <button class="active" data-view-button="mail">Mail</button>
           <button>Contacts</button>
         </nav>
 
-        <div class="search-wrap">
+        <div class="search-wrap" id="searchWrap">
           <span>⌕</span>
           <input id="searchInput" placeholder="Search mail" />
-        </div>
-
-        <div class="user-switcher">
-          <span>현재 사용자</span>
-          <select id="userSelect"></select>
         </div>
       </header>
 
@@ -81,7 +86,7 @@
         </div>
       </section>
 
-      <section class="toolbar">
+      <section class="toolbar" id="mailToolbar">
         <button id="toolbarReplyButton">답장</button>
         <button>전체답장</button>
         <button>전달</button>
@@ -91,7 +96,7 @@
         <button>이동</button>
       </section>
 
-      <section class="content-grid">
+      <section class="content-grid" id="mailView">
         <div class="mail-list-panel">
           <table class="mail-table">
             <thead>
@@ -117,6 +122,77 @@
         <aside class="detail-panel">
           <div id="detailBody" class="detail-empty">메일을 선택하세요.</div>
         </aside>
+      </section>
+
+      <section class="mypage-view hidden" id="myPageView">
+        <div class="mypage-grid">
+          <section class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">김</div>
+            <div>
+              <h2 id="profileName">김대표</h2>
+              <p id="profileSub">관리자 · 전체</p>
+            </div>
+          </section>
+
+          <section class="mypage-card">
+            <h3>내 계정 정보</h3>
+            <dl class="profile-list" id="profileList"></dl>
+          </section>
+
+          <section class="mypage-card wide">
+            <div class="card-title-row">
+              <h3>메일함 / 발신주소 권한</h3>
+              <span class="help-text">v 표시는 현재 사용자가 가능한 기능입니다.</span>
+            </div>
+
+            <table class="permission-table">
+              <thead>
+                <tr>
+                  <th>메일함 / 주소</th>
+                  <th>구분</th>
+                  <th>볼 수 있음</th>
+                  <th>발신 가능</th>
+                  <th>개인함 포함</th>
+                  <th>부서 권한</th>
+                  <th>서명 사용</th>
+                  <th>관리 가능</th>
+                  <th>설명</th>
+                </tr>
+              </thead>
+              <tbody id="permissionTableBody"></tbody>
+            </table>
+          </section>
+
+          <section class="mypage-card wide">
+            <div class="card-title-row">
+              <h3>회사 서명</h3>
+              <span class="help-text">기본 발신주소 기준으로 서명이 표시됩니다.</span>
+            </div>
+
+            <label class="signature-address-row">
+              <span>기본 발신주소</span>
+              <select id="signatureAddressSelect"></select>
+            </label>
+
+            <div id="signatureCard"></div>
+          </section>
+
+          <section class="mypage-card wide">
+            <h3>권한표에 추가하면 좋은 항목</h3>
+            <div class="idea-list">
+              <span>읽기</span>
+              <span>발신</span>
+              <span>답장</span>
+              <span>삭제</span>
+              <span>보관</span>
+              <span>담당자 변경</span>
+              <span>프로젝트 연결</span>
+              <span>서명 선택</span>
+              <span>전체 열람</span>
+              <span>사용자 관리</span>
+            </div>
+          </section>
+        </div>
       </section>
     </main>
   </div>
@@ -169,4 +245,5 @@
 
   <script src="./assets/js/app.js"></script>
 </body>
+
 </html>
